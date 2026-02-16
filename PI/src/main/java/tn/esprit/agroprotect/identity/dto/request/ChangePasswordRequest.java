@@ -1,0 +1,27 @@
+package tn.esprit.agroprotect.identity.dto.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * Change password request DTO.
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ChangePasswordRequest {
+
+    @NotBlank(message = "Current password is required")
+    private String currentPassword;
+
+    @NotBlank(message = "New password is required")
+    @Size(min = 12, message = "Password must be at least 12 characters")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$", message = "Password must contain uppercase, lowercase, digit, and special character")
+    private String newPassword;
+}

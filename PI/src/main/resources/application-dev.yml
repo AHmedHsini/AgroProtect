@@ -1,0 +1,90 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: AgroProtect
+  
+  # MySQL Database for Development
+  datasource:
+    url: jdbc:mysql://localhost:3306/agroprotect_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 300000
+      connection-timeout: 20000
+  
+  # JPA Configuration for MySQL Development
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+  
+  # Disable Flyway for development
+  flyway:
+    enabled: false
+  
+  # Disable Redis for testing
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+# JWT Configuration (using HMAC for dev simplicity)
+jwt:
+  secret-key: agroprotect-dev-secret-key-2026-super-secure-hmac-key-for-development
+  access-token-ttl: 900000      # 15 minutes
+  refresh-token-ttl: 604800000  # 7 days
+  issuer: agroprotect-identity
+
+# ML Service Configuration
+ml-service:
+  url: http://localhost:8001
+  api-key: agro-protect-ml-service-2026-secure-key
+  timeout-seconds: 30
+  confidence-threshold: 0.85
+
+# Security Configuration
+security:
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+  aes-secret-key: ZGV2U2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTA=
+  password:
+    min-length: 8
+    require-uppercase: true
+    require-lowercase: true
+    require-digit: true
+    require-special: false
+  account:
+    lock-threshold: 10
+    lock-duration-minutes: 1
+  rate-limit:
+    requests-per-minute: 1000
+
+# Logging Configuration
+logging:
+  level:
+    com.agriplatform.identity: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN
+
+# Management/Actuator Configuration  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

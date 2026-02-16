@@ -1,0 +1,7 @@
+{
+  "firstName": "Test",
+  "lastName": "User", 
+  "email": "test@esprit.tn",
+  "password": "Test123456!@$",
+  "consentPolicyVersion": "v1.0"
+}

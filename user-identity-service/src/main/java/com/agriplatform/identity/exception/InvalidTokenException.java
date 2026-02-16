@@ -1,7 +1,0 @@
-package com.agriplatform.identity.exception;
-
-public class InvalidTokenException extends IdentityException {
-    public InvalidTokenException(String message) {
-        super(message, "INVALID_TOKEN");
-    }
-}
