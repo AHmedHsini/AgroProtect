@@ -50,6 +50,7 @@ public class SecurityConfig {
     private String allowedOrigins;
 
     // Public endpoints that don't require authentication
+    // NOTE: Paths are relative to the context path (/api)
     private static final String[] PUBLIC_ENDPOINTS = {
             "/v1/auth/register",
             "/v1/auth/login",
@@ -63,7 +64,9 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
-            "/actuator/health"
+            "/health/**",
+            "/actuator/health",
+            "/v1/microassurance/**"  // Microassurance endpoints (accessed via /api/v1/microassurance/*)
     };
 
     // Internal service endpoints (require service-to-service auth)

@@ -7,6 +7,16 @@ spring:
   application:
     name: ${SERVICE_NAME:AgroProtect}
   
+  # Disable OAuth2 auto-configuration when not configured
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+  
+  # Allow bean definition overriding for unified deployment
+  # (both services define similar beans like jpaAuditingHandler)
+  main:
+    allow-bean-definition-overriding: true
+  
   # Database Configuration (MySQL via XAMPP)
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:agroprotect_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&createDatabaseIfNotExist=true
@@ -77,9 +87,9 @@ jwt:
   refresh-token-ttl: ${JWT_REFRESH_TTL:604800000}  # 7 days in milliseconds
   issuer: ${SERVICE_NAME:agroprotect-identity}
 
-# Security Configuration
+# Security Configuration (legacy location - retained for compatibility)
 security:
-  aes-secret-key: ${AES_SECRET_KEY:}
+  aes-secret-key: ${AES_SECRET_KEY:1v0VJZc+3/7L9m4kQ5xN2oP8yU6wF1bE7xV2zD5qW8c=}
   password:
     min-length: 12
     require-uppercase: true
@@ -128,6 +138,9 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+  health:
+    mail:
+      enabled: false
 
 # Logging Configuration
 logging:

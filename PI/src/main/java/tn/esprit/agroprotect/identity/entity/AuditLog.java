@@ -3,11 +3,8 @@ package tn.esprit.agroprotect.identity.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
-import java.util.Map;
 
 /**
  * Audit log entity for security and compliance tracking.
@@ -71,9 +68,9 @@ public class AuditLog {
     /**
      * Additional context stored as JSON.
      */
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
-    private Map<String, Object> details;
+    @Lob
+    @Column(name = "details", columnDefinition = "LONGTEXT")
+    private String details;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,7 @@ import java.util.Map;
 public class AuditService {
 
     private final AuditLogRepository auditLogRepository;
+    private final ObjectMapper objectMapper;
 
     /**
      * Log an authentication event.
@@ -65,7 +69,7 @@ public class AuditService {
                     .resourceType(resourceType)
                     .resourceId(resourceId)
                     .status(status)
-                    .details(details)
+                    .details(serializeDetails(details))
                     .ipAddress(getClientIp(request))
                     .userAgent(request.getHeader("User-Agent"))
                     .deviceId(request.getHeader("X-Device-Id"))
@@ -90,7 +94,7 @@ public class AuditService {
                     .action(action)
                     .resourceType("SECURITY")
                     .status(AuditStatus.SUCCESS)
-                    .details(detailsMap)
+                    .details(serializeDetails(detailsMap))
                     .ipAddress(getClientIp(request))
                     .userAgent(request.getHeader("User-Agent"))
                     .build();
@@ -98,6 +102,18 @@ public class AuditService {
             auditLogRepository.save(auditLog);
         } catch (Exception e) {
             log.error("Failed to save security audit log", e);
+        }
+    }
+
+    private String serializeDetails(Map<String, Object> details) {
+        if (details == null || details.isEmpty()) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(details);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to serialize audit details", e);
+            return null;
         }
     }
 

@@ -7,16 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 /**
- * Data initialization for development environment.
- * Creates default roles and permissions for testing.
+ * Data initialization for all environments.
+ * Creates default roles and permissions on application startup.
  */
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-@Profile("dev")
 public class DataInitializer {
 
     private final RoleRepository roleRepository;
@@ -24,10 +22,11 @@ public class DataInitializer {
     @Bean
     public ApplicationRunner initializeData() {
         return args -> {
-            log.info("Initializing development data...");
+            log.info("Initializing default roles...");
 
             // Create default roles if they don't exist
             createRoleIfNotExists("ADMIN", "System administrator with full access", true);
+            createRoleIfNotExists("AGRICULTEUR", "Agricultural farmer user", true);
             createRoleIfNotExists("FARMER", "Agricultural farmer user", true);
             createRoleIfNotExists("INVESTOR", "Microfinance investor", true);
             createRoleIfNotExists("INSURER", "Insurance provider representative", true);
@@ -35,7 +34,7 @@ public class DataInitializer {
             createRoleIfNotExists("WORKER", "Agricultural worker/laborer", true);
             createRoleIfNotExists("USER", "Basic authenticated user", true);
 
-            log.info("Data initialization completed successfully");
+            log.info("Default roles initialization completed successfully");
         };
     }
 
