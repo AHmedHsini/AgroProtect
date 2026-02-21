@@ -21,3 +21,16 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+*_key_base64*.txt
