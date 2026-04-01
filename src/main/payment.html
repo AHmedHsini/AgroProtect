@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgroProtect Payment Test</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+<h1>Pay Installment</h1>
+
+<div>
+    <label>Installment ID:</label>
+    <input type="number" id="installmentId" value="14">
+    <button onclick="initiatePayment()">Initiate Payment</button>
+</div>
+
+<div id="payment-form" style="display:none; margin-top: 20px;">
+    <div id="card-element"></div>
+    <button onclick="confirmPayment()">Pay Now</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+    const stripe = Stripe('pk_test_your_publishable_key');
+    let clientSecret = '';
+    let paymentIntentId = '';
+
+    async function initiatePayment() {
+        const id = document.getElementById('installmentId').value;
+
+        const response = await fetch('http://localhost:8083/AgroProtect/payments/initiate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({installmentId: parseInt(id), currency: 'usd'})
+        });
+
+        const data = await response.json();
+        clientSecret = data.clientSecret;
+        paymentIntentId = data.paymentIntentId;
+
+        document.getElementById('payment-form').style.display = 'block';
+        document.getElementById('result').innerHTML =
+            `Amount to pay: $${data.amountToPay}`;
+
+        // Setup Stripe card element
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+    }
+
+    async function confirmPayment() {
+        const {paymentIntent, error} = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {card: cardElement}
+        });
+
+        if (error) {
+            document.getElementById('result').innerHTML = 'Error: ' + error.message;
+        } else {
+            // Confirm with backend
+            const response = await fetch('http://localhost:8083/AgroProtect/payments/confirm', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    installmentId: parseInt(document.getElementById('installmentId').value),
+                    paymentIntentId: paymentIntentId,
+                    amount: paymentIntent.amount / 100
+                })
+            });
+
+            const result = await response.json();
+            document.getElementById('result').innerHTML =
+                `Payment successful! Status: ${result.status}`;
+        }
+    }
+</script>
+</body>
+</html>
