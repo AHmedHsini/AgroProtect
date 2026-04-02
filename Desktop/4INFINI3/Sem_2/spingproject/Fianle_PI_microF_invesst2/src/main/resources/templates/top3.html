@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Top 3 Offers - AI Analysis</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a3c34;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .rank {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d6a4f;
+        }
+
+        .score {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .high { color: green; }
+        .medium { color: orange; }
+        .low { color: red; }
+
+        .section {
+            margin-top: 10px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .badge-high { background: green; }
+        .badge-medium { background: orange; }
+        .badge-low { background: red; }
+
+        .reason {
+            margin-top: 10px;
+            font-style: italic;
+            color: #333;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h1>🧠 AI Top 3 Investment Recommendations</h1>
+
+<div class="container">
+
+    <div th:each="q, stat : ${quotes}" class="card">
+
+        <div class="rank">
+            🏆 Rank #<span th:text="${stat.index + 1}"></span>
+        </div>
+
+        <div class="section">
+            <span class="label">Partner:</span>
+            <span th:text="${q.quote != null and q.quote.partner != null ? q.quote.partner.name : 'Unknown partner'}"></span>        </div>
+
+        <div class="section">
+            <span class="label">Description:</span>
+            <span th:text="${q.quote.description}"></span>
+        </div>
+
+        <div class="section score"
+             th:classappend="${q.score > 0.7} ? 'high' : (${q.score > 0.4} ? 'medium' : 'low')">
+
+            Score: <span th:text="${#numbers.formatDecimal(q.score, 1, 2)}"></span>
+        </div>
+
+        <div class="section">
+            <span class="badge"
+                  th:classappend="${q.score > 0.7} ? 'badge-high' :
+                                 (${q.score > 0.4} ? 'badge-medium' : 'badge-low')">
+
+                <span th:text="${q.score > 0.7 ? 'HIGH' : (q.score > 0.4 ? 'MEDIUM' : 'LOW')}"></span>
+            </span>
+        </div>
+
+        <div class="section">
+            <span class="label">Success Probability:</span>
+            <span th:text="${#numbers.formatDecimal(q.successProbability * 100, 1, 0)} + '%'"></span>
+        </div>
+
+        <div class="reason">
+            💡 <span th:text="${q.reason}"></span>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
