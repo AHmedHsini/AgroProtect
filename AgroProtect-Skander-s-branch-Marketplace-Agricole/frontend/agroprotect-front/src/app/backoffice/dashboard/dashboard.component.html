@@ -1,0 +1,178 @@
+<div class="dashboard-container">
+  
+    <!-- Page Header -->
+    <div class="page-header">
+      <h3>Dashboard</h3>
+      <p class="text-muted">Overview of your agricultural platform</p>
+    </div>
+  
+    <!-- Stat Cards Row -->
+    <div class="row g-4 mb-4">
+      
+      <!-- Total Annonces -->
+      <div class="col-md-6 col-xl-3">
+        <div class="stat-card-flat">
+          <div class="card-body">
+            <div class="stat-icon-wrap icon-primary">
+              <i class="bi bi-file-text"></i>
+            </div>
+            <div class="stat-info">
+              <h4>{{ stats.total }}</h4>
+              <p>Total Annonces</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- En Attente -->
+      <div class="col-md-6 col-xl-3">
+        <div class="stat-card-flat">
+          <div class="card-body">
+            <div class="stat-icon-wrap icon-warning">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="stat-info">
+              <h4>{{ stats.enAttente }}</h4>
+              <p>En Attente</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Disponible -->
+      <div class="col-md-6 col-xl-3">
+        <div class="stat-card-flat">
+          <div class="card-body">
+            <div class="stat-icon-wrap icon-success">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h4>{{ stats.disponible }}</h4>
+              <p>Disponible</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Non Disponible -->
+      <div class="col-md-6 col-xl-3">
+        <div class="stat-card-flat">
+          <div class="card-body">
+            <div class="stat-icon-wrap icon-danger">
+              <i class="bi bi-x-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h4>{{ stats.nonDisponible }}</h4>
+              <p>Non Disponible</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Second Row -->
+    <div class="row g-4">
+      
+      <!-- Type Breakdown -->
+      <div class="col-xl-4 col-md-6">
+        <div class="content-card">
+          <div class="card-header-custom">
+            <h5>Annonces by Type</h5>
+          </div>
+          <div class="card-body-custom">
+            <div class="type-stat-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-tree text-success me-2"></i> Projets Agricoles</span>
+                <span class="fw-bold">{{ stats.projets }}</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-success" [style.width.%]="stats.total ? (stats.projets / stats.total * 100) : 0"></div>
+              </div>
+            </div>
+            
+            <div class="type-stat-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-gear text-primary me-2"></i> Equipements</span>
+                <span class="fw-bold">{{ stats.equipements }}</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-primary" [style.width.%]="stats.total ? (stats.equipements / stats.total * 100) : 0"></div>
+              </div>
+            </div>
+  
+            <div class="type-stat-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-briefcase text-info me-2"></i> Emplois & Services</span>
+                <span class="fw-bold">{{ stats.total - stats.projets - stats.equipements }}</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-info" [style.width.%]="stats.total ? ((stats.total - stats.projets - stats.equipements) / stats.total * 100) : 0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Recent Annonces -->
+      <div class="col-xl-8 col-md-6">
+        <div class="content-card">
+          <div class="card-header-custom">
+            <h5>Recent Annonces</h5>
+            <a routerLink="/backoffice/annonces" class="btn btn-sm btn-primary">View All</a>
+          </div>
+          <div class="card-body-custom p-0">
+            <div style="overflow-x: auto;">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of recentAnnonces" [routerLink]="['/backoffice/annonces/edit', a.id]" style="cursor: pointer;">
+                    <td class="text-muted">#{{ a.id }}</td>
+                    <td style="font-weight: 500;">{{ a.titre }}</td>
+                    <td><span class="badge badge-light">{{ a.typeAnnonce }}</span></td>
+                    <td>
+                      <span class="badge" [ngClass]="getStatusClass(a.status)">
+                        {{ a.status }}
+                      </span>
+                    </td>
+                    <td style="font-weight: 500;">{{ a.targetAmount | currency:'TND' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="recentAnnonces.length === 0 && !loading" class="text-center py-4 text-muted">
+              No annonces found
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Quick Actions -->
+    <div class="row g-4 mt-1">
+      <div class="col-md-6">
+        <div class="content-card quick-action-card">
+          <i class="bi bi-plus-circle action-icon text-primary"></i>
+          <h5>Create Annonce</h5>
+          <p>Add a new agricultural listing</p>
+          <a routerLink="/backoffice/annonces/new" class="btn btn-primary">Create New</a>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="content-card quick-action-card">
+          <i class="bi bi-list-check action-icon text-success"></i>
+          <h5>Manage Annonces</h5>
+          <p>View and edit all listings</p>
+          <a routerLink="/backoffice/annonces" class="btn btn-success">View List</a>
+        </div>
+      </div>
+    </div>
+  
+  </div>

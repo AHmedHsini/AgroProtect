@@ -1,0 +1,74 @@
+<div class="container mt-4">
+    <h2>Annonces</h2>
+    <div class="mb-3">
+      <button class="btn btn-success" routerLink="/backoffice/annonces/new">
+        <i class="bi bi-plus-lg"></i> New Annonce
+      </button>
+    </div>
+  
+    <!-- Loading -->
+    <div *ngIf="loading" class="alert alert-info">
+      Loading annonces...
+    </div>
+  
+    <!-- Error -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+  
+    <!-- Table -->
+    <table class="table table-striped" *ngIf="!loading && annonces.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Titre</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Budget</th>
+          <th>Location</th>
+          <th style="width: 180px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of annonces">
+          <td>{{ a.id }}</td>
+          <td>{{ a.typeAnnonce }}</td>
+          <td>{{ a.titre }}</td>
+          <!-- Date -->
+          <td>{{ formatDate(a.datePublication) }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-warning': a.status === 'EN_ATTENTE',
+              'bg-success': a.status === 'DISPONIBLE',
+              'bg-danger': a.status === 'NON_DISPONIBLE'
+            }">
+              {{ a.status }}
+            </span>
+          </td>
+          <td>{{ a.targetAmount | currency:'TND' }}</td>
+          <td>{{ a.location || '-' }}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <button 
+                class="btn btn-sm btn-primary" 
+                (click)="edit(a); $event.stopPropagation()">
+                <i class="bi bi-pencil-square"></i> Update
+              </button>
+              
+              <button 
+                class="btn btn-sm btn-danger" 
+                (click)="delete(a); $event.stopPropagation()">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Empty -->
+    <div *ngIf="!loading && annonces.length === 0 && !error" class="alert alert-secondary">
+      No annonces found.
+    </div>
+  </div>

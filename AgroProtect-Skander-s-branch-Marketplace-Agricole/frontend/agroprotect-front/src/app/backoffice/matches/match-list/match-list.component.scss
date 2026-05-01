@@ -1,0 +1,15 @@
+/* Minimal overrides - inherits from global styles.scss */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+    font-size: 0.75rem;
+  }
+  
+  .table td, .table th {
+    vertical-align: middle;
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }

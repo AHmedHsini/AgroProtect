@@ -1,0 +1,90 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Matches Management</h2>
+      <button class="btn btn-success" routerLink="/backoffice/matches/new">
+        <i class="bi bi-plus-lg"></i> New Match
+      </button>
+    </div>
+  
+    <!-- Loading -->
+    <div *ngIf="loading" class="alert alert-info">
+      Loading matches...
+    </div>
+  
+    <!-- Error -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+      <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadMatches()">Retry</button>
+    </div>
+  
+    <!-- Table -->
+    <div class="table-responsive" *ngIf="!loading && matches.length > 0">
+      <table class="table table-striped table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Annonce</th>
+            <th>Investisseur</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Montant</th>
+            <th style="width: 180px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let m of matches">
+            <!-- ID -->
+            <td class="text-muted">#{{ m.id }}</td>
+            
+            <!-- Annonce -->
+            <td>
+                <strong>{{ m.annonce?.titre || 'N/A' }}</strong>
+                
+              </td>
+            
+            <!-- Investisseur -->
+            <td>#{{ m.investisseurId }}</td>
+            
+            <!-- Date -->
+            <td>{{ formatDate(m.matchDate) }}</td>
+            
+            <!-- Status Badge -->
+            <td>
+              <span class="badge" [ngClass]="getStatusClass(m.status)">
+                {{ m.status }}
+              </span>
+            </td>
+            
+            
+            
+            <!-- Montant -->
+            <td>{{ formatCurrency(m.montantPropose) }}</td>
+            
+            <!-- Actions -->
+            <td>
+                <div class="d-flex gap-2">
+                    <button 
+                    class="btn btn-sm btn-primary" 
+                    routerLink="/backoffice/matches/edit/{{ m.id }}"
+                    (click)="$event.stopPropagation()">
+                    <i class="bi bi-pencil-square"></i> Update
+                  </button>
+                  
+                  <button 
+                    class="btn btn-sm btn-danger" 
+                    (click)="delete(m); $event.stopPropagation()">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+  
+    <!-- Empty State -->
+    <div *ngIf="!loading && matches.length === 0 && !error" class="alert alert-secondary text-center">
+      <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+      <p class="mt-2 mb-0">No matches found.</p>
+    </div>
+  </div>

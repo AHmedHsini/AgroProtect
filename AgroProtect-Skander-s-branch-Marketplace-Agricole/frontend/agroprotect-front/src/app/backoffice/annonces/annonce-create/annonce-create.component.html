@@ -1,0 +1,159 @@
+<div class="container mt-4">
+  <h2>Create New Annonce</h2>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card p-4 mt-3">
+    
+    <div class="mb-3">
+      <label class="form-label">Type *</label>
+      <select class="form-select" formControlName="typeAnnonce">
+        <option [value]="typeAnnonce.PROJET_AGRICOLE">Projet Agricole</option>
+        <option [value]="typeAnnonce.EQUIPEMENT">Equipement</option>
+        <option [value]="typeAnnonce.EMPLOI">Emploi</option>
+        <option [value]="typeAnnonce.SERVICE">Service</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">titre *</label>
+      <input type="text" class="form-control" formControlName="titre" placeholder="Enter titre">
+      <div class="text-danger small" *ngIf="form.get('titre')?.invalid && form.get('titre')?.touched">
+        titre is required (max 200 chars)
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" formControlName="description" rows="4" placeholder="Enter description"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Status *</label>
+      <select class="form-select" formControlName="status">
+        <option [value]="statusAnnonce.EN_ATTENTE">En Attente</option>
+        <option [value]="statusAnnonce.DISPONIBLE">Disponible</option>
+        <option [value]="statusAnnonce.NON_DISPONIBLE">Non Disponible</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Target Amount (TND) *</label>
+      <input type="number" class="form-control" formControlName="targetAmount" min="0">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Location</label>
+      <input type="text" class="form-control" formControlName="location" placeholder="City, Region">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Target Duration (Months)</label>
+      <input type="number" class="form-control" formControlName="targetDurationMonths" min="1">
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-success" [disabled]="saving">
+        {{ saving ? 'Creating...' : 'Create Annonce' }}
+      </button>
+      
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+
+ <!-- === ATTACHMENT UPLOAD SECTION (Always visible) === -->
+<div class="card p-4 mt-4">
+  <h5 class="mb-3">📎 Attachments</h5>
+  
+  <!-- Info Banner (Shows until annonce is saved) -->
+  <div class="alert alert-info py-2 mb-3" *ngIf="!annonceId">
+    <i class="bi bi-info-circle"></i> 
+    <strong>Tip:</strong> Create the annonce first to enable file uploads.
+  </div>
+
+  <!-- File Input -->
+  <div class="mb-3">
+    <label class="form-label">Choose File</label>
+    <input 
+      type="file" 
+      class="form-control" 
+      (change)="onFileSelected($event)"
+      [disabled]="uploading || !annonceId"
+      accept="image/*,.pdf,.doc,.docx,.xlsx,.zip">
+    <small class="text-muted">Max 10MB. Supported: Images, PDF, Word, Excel, ZIP</small>
+  </div>
+
+  <!-- Category Select -->
+  <div class="mb-3" *ngIf="selectedFile">
+    <label class="form-label">Category</label>
+    <select class="form-select" [(ngModel)]="uploadCategory" [disabled]="uploading || !annonceId">
+      <option value="DOCUMENT">Document</option>
+      <option value="IMAGE">Image</option>
+      <option value="CONTRACT">Contract</option>
+      <option value="OTHER">Other</option>
+    </select>
+  </div>
+
+  <!-- Upload Button -->
+  <button 
+    class="btn btn-sm btn-outline-primary mb-3" 
+    (click)="uploadAttachment()"
+    [disabled]="!selectedFile || uploading || !annonceId">
+    {{ uploading ? 'Uploading...' : '📤 Upload Attachment' }}
+  </button>
+
+  <!-- Progress Bar -->
+  <div class="progress mb-2" *ngIf="uploadProgress > 0">
+    <div class="progress-bar" 
+         [class.bg-success]="uploadProgress === 100"
+         [class.bg-danger]="uploadError"
+         role="progressbar" 
+         [style.width.%]="uploadProgress">
+      {{ uploadProgress }}%
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="text-success small mb-2" *ngIf="uploadMessage">{{ uploadMessage }}</div>
+  <div class="text-danger small mb-2" *ngIf="uploadError">{{ uploadError }}</div>
+
+  <!-- Uploaded Files List -->
+  <div *ngIf="attachments.length > 0">
+    <h6 class="mb-2">Uploaded Files ({{ attachments.length }})</h6>
+    <ul class="list-group">
+      <li class="list-group-item d-flex justify-content-between align-items-center py-2" 
+          *ngFor="let att of attachments">
+        <div>
+          <strong>{{ att.fileName }}</strong>
+          <div class="small text-muted">
+            {{ att.category }} • {{ formatSize(att.fileSize) }} • 
+            <span [class.text-warning]="att.status === 'PENDING'"
+                  [class.text-success]="att.status === 'APPROVED'"
+                  [class.text-danger]="att.status === 'REJECTED'">
+              {{ att.status }}
+            </span>
+          </div>
+        </div>
+        <div class="btn-group btn-group-sm">
+          <button class="btn btn-outline-primary" 
+                  (click)="downloadAttachment(att.id, att.fileName)" 
+                  title="Download">📥</button>
+          <button class="btn btn-outline-danger" 
+                  (click)="deleteAttachment(att.id)" 
+                  title="Delete">🗑️</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="text-muted small mt-2" *ngIf="attachments.length === 0 && annonceId">
+    No attachments yet. Upload files to add supporting documents.
+  </div>
+</div>
+
+</div>

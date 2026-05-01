@@ -1,0 +1,69 @@
+<div class="container mt-4">
+    <h2>Update Match #{{ matchId }}</h2>
+  
+    <!-- Loading -->
+    <div *ngIf="loading" class="alert alert-info">
+      Loading match details...
+    </div>
+  
+    <!-- Error -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+      <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadMatch(matchId!)">Retry</button>
+    </div>
+  
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!loading" class="card p-4 mt-3">
+  
+      <!-- Annonce ID -->
+      <div class="mb-3">
+        <label class="form-label">Annonce ID *</label>
+        <input type="number" class="form-control" formControlName="annonceId" min="1">
+        <div class="text-danger small" *ngIf="form.get('annonceId')?.invalid && form.get('annonceId')?.touched">
+          Annonce ID is required
+        </div>
+      </div>
+  
+      
+  
+      <!-- Status -->
+<div class="mb-3">
+    <label class="form-label">Status *</label>
+    <select class="form-select" formControlName="status">
+      <option [value]="statusMatch.EN_ATTENTE">En Attente</option>
+      <option [value]="statusMatch.ACCEPTE">Accepté</option>
+      <option [value]="statusMatch.REFUSE">Refusé</option>
+      <option [value]="statusMatch.EXPIRE">Expiré</option>
+    </select>
+    <div class="text-danger small" *ngIf="form.get('status')?.invalid && form.get('status')?.touched">
+      Status is required
+    </div>
+  </div>
+  
+      
+  
+      <!-- Montant Proposé -->
+      <div class="mb-3">
+        <label class="form-label">Montant Proposé (TND)</label>
+        <input 
+          type="number" 
+          class="form-control" 
+          formControlName="montantPropose" 
+          min="0" 
+          step="0.01"
+          placeholder="0.00">
+        <div class="text-muted small">Leave empty to keep current value</div>
+      </div>
+  
+      <!-- Buttons -->
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Update Match' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+  
+    </form>
+  </div>
