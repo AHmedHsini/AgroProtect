@@ -1,0 +1,69 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /agroprotect
+
+# File Upload
+file:
+  upload-dir: ./uploads
+
+spring:
+  application:
+    name: AgroProtect
+  datasource:
+    url: jdbc:mysql://localhost:3306/agroprotect?createDatabaseIfNotExist=true
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  mail:
+    default-recipient: skander1502@gmail.com@gmail.com  # ← Replace with your email
+    host: smtp.gmail.com
+    port: 587
+    username: AgroProtect01@gmail.com          # ← Your full Gmail address
+    password: cmhhwswmmsdnksvk            # ← 16-char App Password (NO SPACES)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+
+
+# CORS
+cors:
+  allowed-origins: http://localhost:4200
+
+# Logging - Keep it clean
+logging:
+  level:
+    root: INFO
+    tn.esprit.agroprotect: DEBUG
+    org.hibernate: WARN
+    org.hibernate.SQL: OFF
+    org.springframework.web: WARN
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
