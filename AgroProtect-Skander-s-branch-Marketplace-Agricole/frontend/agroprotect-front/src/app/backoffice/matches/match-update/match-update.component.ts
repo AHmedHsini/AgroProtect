@@ -47,8 +47,7 @@ export class MatchUpdateComponent implements OnInit {
     });
   }
 
-  // In loadMatch() method
-// In loadMatch() method
+  
 loadMatch(id: number): void {
     this.loading = true;
     this.matchService.getById(id).subscribe({

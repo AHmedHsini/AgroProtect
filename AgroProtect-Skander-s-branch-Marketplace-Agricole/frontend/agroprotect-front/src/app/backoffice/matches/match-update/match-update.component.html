@@ -1,69 +1,81 @@
-<div class="container mt-4">
-    <h2>Update Match #{{ matchId }}</h2>
-  
-    <!-- Loading -->
-    <div *ngIf="loading" class="alert alert-info">
-      Loading match details...
+<div class="page-header">
+  <div class="page-header-info">
+    <h2>Modifier le Fund #{{ matchId }}</h2>
+    <span class="page-subtitle">Mettez à jour les informations de l'investissement</span>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="content-card">
+    <div class="state-block">
+      <div class="spinner-border text-success" role="status"></div>
+      <span class="ms-2 text-muted">Chargement du fund...</span>
     </div>
-  
-    <!-- Error -->
-    <div *ngIf="error" class="alert alert-danger">
-      {{ error }}
-      <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadMatch(matchId!)">Retry</button>
-    </div>
-  
-    <!-- Form -->
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!loading" class="card p-4 mt-3">
-  
-      <!-- Annonce ID -->
-      <div class="mb-3">
-        <label class="form-label">Annonce ID *</label>
-        <input type="number" class="form-control" formControlName="annonceId" min="1">
-        <div class="text-danger small" *ngIf="form.get('annonceId')?.invalid && form.get('annonceId')?.touched">
-          Annonce ID is required
+  </div>
+}
+
+@if (error) {
+  <div class="alert alert-danger d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span>{{ error }}</span>
+    <button class="btn btn-sm btn-outline-danger ms-auto" (click)="loadMatch(matchId!)">
+      <i class="bi bi-arrow-clockwise me-1"></i> Réessayer
+    </button>
+  </div>
+}
+
+@if (!loading) {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="content-card">
+      <div class="card-body-title">
+        <i class="bi bi-handshake"></i>
+        <span>Détails du fund</span>
+      </div>
+
+      <div class="form-grid">
+        <!-- Annonce ID -->
+        <div class="form-group">
+          <label class="form-label">Annonce ID <span class="text-danger">*</span></label>
+          <div class="input-icon-wrapper">
+            <i class="bi bi-megaphone"></i>
+            <input type="number" class="form-control" formControlName="annonceId" min="1">
+          </div>
+          <div class="field-error" *ngIf="form.get('annonceId')?.invalid && form.get('annonceId')?.touched">
+            <i class="bi bi-info-circle"></i> L'ID de l'annonce est requis
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+          <label class="form-label">Statut <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="status">
+            <option [value]="statusMatch.EN_ATTENTE">En Attente</option>
+            <option [value]="statusMatch.ACCEPTE">Accepté</option>
+            <option [value]="statusMatch.REFUSE">Refusé</option>
+            <option [value]="statusMatch.TERMINE">Terminé</option>
+          </select>
+          <div class="field-error" *ngIf="form.get('status')?.invalid && form.get('status')?.touched">
+            <i class="bi bi-info-circle"></i> Le statut est requis
+          </div>
+        </div>
+
+        <!-- Montant -->
+        <div class="form-group full-width">
+          <label class="form-label">Montant proposé (TND)</label>
+          <div class="input-icon-wrapper input-icon-right">
+            <input type="number" class="form-control" formControlName="montantPropose" min="0" step="0.01" placeholder="0.000">
+            <span class="input-suffix">TND</span>
+          </div>
+          <small class="text-muted">Laissez vide pour conserver la valeur actuelle</small>
         </div>
       </div>
-  
-      
-  
-      <!-- Status -->
-<div class="mb-3">
-    <label class="form-label">Status *</label>
-    <select class="form-select" formControlName="status">
-      <option [value]="statusMatch.EN_ATTENTE">En Attente</option>
-      <option [value]="statusMatch.ACCEPTE">Accepté</option>
-      <option [value]="statusMatch.REFUSE">Refusé</option>
-      <option [value]="statusMatch.EXPIRE">Expiré</option>
-    </select>
-    <div class="text-danger small" *ngIf="form.get('status')?.invalid && form.get('status')?.touched">
-      Status is required
     </div>
-  </div>
-  
-      
-  
-      <!-- Montant Proposé -->
-      <div class="mb-3">
-        <label class="form-label">Montant Proposé (TND)</label>
-        <input 
-          type="number" 
-          class="form-control" 
-          formControlName="montantPropose" 
-          min="0" 
-          step="0.01"
-          placeholder="0.00">
-        <div class="text-muted small">Leave empty to keep current value</div>
-      </div>
-  
-      <!-- Buttons -->
-      <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-primary" [disabled]="saving">
-          {{ saving ? 'Saving...' : 'Update Match' }}
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="cancel()">
-          Cancel
-        </button>
-      </div>
-  
-    </form>
-  </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-add" [disabled]="saving">
+        <i class="bi bi-check-lg"></i> {{ saving ? 'Mise à jour...' : 'Mettre à jour' }}
+      </button>
+      <button type="button" class="btn btn-cancel" (click)="cancel()">Annuler</button>
+    </div>
+  </form>
+}

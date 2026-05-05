@@ -19,11 +19,11 @@ spring:
       maximum-pool-size: 10
       minimum-idle: 5
   mail:
-    default-recipient: skander1502@gmail.com@gmail.com  # ← Replace with your email
+    default-recipient: skander1502@gmail.com@gmail.com
     host: smtp.gmail.com
     port: 587
-    username: AgroProtect01@gmail.com          # ← Your full Gmail address
-    password: cmhhwswmmsdnksvk            # ← 16-char App Password (NO SPACES)
+    username: AgroProtect01@gmail.com
+    password: cmhhwswmmsdnksvk
     properties:
       mail:
         smtp:
@@ -39,9 +39,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-
-
+  web:
+    resources:
+      static-locations: file:uploads/
 
 # CORS
 cors:

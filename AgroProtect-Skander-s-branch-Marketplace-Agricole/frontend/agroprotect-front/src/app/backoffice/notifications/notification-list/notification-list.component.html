@@ -1,94 +1,157 @@
-<div class="container mt-4">
-  <h2>🔔 Notification History</h2>
-
-  <!-- Filters -->
-  <div class="card p-3 mb-4">
-    <div class="row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Search</label>
-        <input type="text" class="form-control" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Search subject or content...">
-      </div>
-
-      <div class="col-md-3">
-        <label class="form-label">Status</label>
-        <select class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
-          <option value="ALL">All Status</option>
-          <option [value]="StatusNotification.ENVOYE">Sent</option>
-          <option [value]="StatusNotification.LU">Read</option>
-          <option [value]="StatusNotification.NON_LU">Unread</option>
-          <option [value]="StatusNotification.ERREUR">Error</option>
-        </select>
-      </div>
-
-      <div class="col-md-3">
-        <label class="form-label">Recipient ID</label>
-        <input type="number" class="form-control" [(ngModel)]="recipientFilter" (change)="applyFilters()" placeholder="User ID">
-      </div>
-
-      <div class="col-md-2 d-flex align-items-end">
-        <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">Clear</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loading -->
-  <div *ngIf="loading" class="alert alert-info">Loading notifications...</div>
-  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-
-  <!-- ✅ STATS SECTION - USING SIMPLE PROPERTIES (NO INLINE LOGIC) -->
-  <div class="row mb-3" *ngIf="!loading && notifications.length > 0">
-    <div class="col-md-3">
-      <div class="card text-center p-2">
-        <h5 class="mb-0">{{ totalSent }}</h5>
-        <small class="text-muted">Total</small>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center p-2">
-        <h5 class="mb-0 text-success">{{ totalRead }}</h5>
-        <small class="text-muted">Read</small>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center p-2">
-        <h5 class="mb-0 text-warning">{{ totalUnread }}</h5>
-        <small class="text-muted">Unread</small>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center p-2">
-        <h5 class="mb-0 text-danger">{{ totalErrors }}</h5>
-        <small class="text-muted">Errors</small>
-      </div>
-    </div>
-  </div>
-
-  <!-- Table -->
-  <div class="card" *ngIf="!loading && filteredNotifications.length > 0">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th><th>To</th><th>Subject</th><th>Status</th><th>Sent Date</th><th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let n of filteredNotifications">
-          <td>{{ n.id }}</td>
-          <td>#{{ n.to }}</td>
-          <td><strong>{{ n.subject }}</strong><br><small class="text-muted">{{ truncateContent(n.content) }}</small></td>
-          <td><span class="badge" [ngClass]="getStatusClass(n.status)">{{ n.status }}</span></td>
-          <td>{{ formatDate(n.sentDate) }}</td>
-          <td>
-            <button class="btn btn-sm btn-outline-success me-1" (click)="markAsRead(n)" *ngIf="n.status !== StatusNotification.LU">✓</button>
-            <button class="btn btn-sm btn-outline-warning me-1" (click)="markAsUnread(n)" *ngIf="n.status === StatusNotification.LU">↺</button>
-            <button class="btn btn-sm btn-outline-primary" (click)="viewContent(n)">👁️</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="!loading && filteredNotifications.length === 0" class="alert alert-secondary text-center">
-    No notifications found.
+<div class="page-header">
+  <div class="page-header-info">
+    <h2>Notifications</h2>
+    <span class="page-subtitle">{{ filteredNotifications.length }} notification(s) affichée(s)</span>
   </div>
 </div>
+
+<!-- Filters -->
+<div class="content-card filter-section">
+  <div class="filter-grid">
+    <div class="filter-field">
+      <label class="form-label">Recherche</label>
+      <div class="input-icon-wrapper">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Sujet ou contenu...">
+      </div>
+    </div>
+
+    <div class="filter-field">
+      <label class="form-label">Statut</label>
+      <select class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="ALL">Tous les statuts</option>
+        <option [value]="'ENVOYE'">Envoyé</option>
+        <option [value]="'LU'">Lu</option>
+        <option [value]="'NON_LU'">Non lu</option>
+        <option [value]="'ERREUR'">Erreur</option>
+      </select>
+    </div>
+
+    <div class="filter-field">
+      <label class="form-label">Destinataire (ID)</label>
+      <input type="number" class="form-control" [(ngModel)]="recipientFilter" (change)="applyFilters()" placeholder="ID User">
+    </div>
+
+    <div class="filter-field filter-actions">
+      <label class="form-label">&nbsp;</label>
+      <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+        <i class="bi bi-x-lg me-1"></i> Réinitialiser
+      </button>
+    </div>
+  </div>
+</div>
+
+@if (loading) {
+  <div class="content-card">
+    <div class="state-block">
+      <div class="spinner-border text-success" role="status"></div>
+      <span class="ms-2 text-muted">Chargement des notifications...</span>
+    </div>
+  </div>
+}
+
+@if (error) {
+  <div class="alert alert-danger d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span>{{ error }}</span>
+  </div>
+}
+
+@if (!loading && notifications.length > 0) {
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon bg-light-green"><i class="bi bi-envelope"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ totalSent }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-light-blue"><i class="bi bi-envelope-check"></i></div>
+      <div class="stat-info">
+        <span class="stat-value text-success">{{ totalRead }}</span>
+        <span class="stat-label">Lues</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-light-orange"><i class="bi bi-envelope-exclamation"></i></div>
+      <div class="stat-info">
+        <span class="stat-value text-warning">{{ totalUnread }}</span>
+        <span class="stat-label">Non lues</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-light-red"><i class="bi bi-exclamation-octagon"></i></div>
+      <div class="stat-info">
+        <span class="stat-value text-danger">{{ totalErrors }}</span>
+        <span class="stat-label">Erreurs</span>
+      </div>
+    </div>
+  </div>
+}
+
+@if (!loading && filteredNotifications.length > 0) {
+  <!-- Table -->
+  <div class="content-card">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Destinataire</th>
+            <th>Sujet</th>
+            <th>Statut</th>
+            <th>Date</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (n of filteredNotifications; track n.id) {
+            <tr>
+              <td class="text-muted fw-medium">#{{ n.id }}</td>
+              <td class="text-muted">#{{ n.to }}</td>
+              <td>
+                <div class="notif-subject">{{ n.subject }}</div>
+                <div class="notif-excerpt text-muted">{{ truncateContent(n.content) }}</div>
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(n.status)">
+                  {{ formatStatus(n.status) }}
+                </span>
+              </td>
+              <td class="text-muted">{{ formatDate(n.sentDate) }}</td>
+              <td>
+                <div class="action-group justify-content-end">
+                  @if (n.status !== 'LU') {
+                    <button class="btn btn-sm btn-outline-success" (click)="markAsRead(n)" title="Marquer comme lu">
+                      <i class="bi bi-check-lg"></i>
+                    </button>
+                  }
+                  @if (n.status === 'LU') {
+                    <button class="btn btn-sm btn-outline-warning" (click)="markAsUnread(n)" title="Marquer comme non lu">
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                  }
+                  <button class="btn btn-sm btn-outline-primary" (click)="viewContent(n)" title="Voir le contenu">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
+
+@if (!loading && filteredNotifications.length === 0 && !error) {
+  <div class="empty-state">
+    <div class="empty-icon">
+      <i class="bi bi-bell-slash"></i>
+    </div>
+    <h5>Aucune notification trouvée</h5>
+    <p class="text-muted mb-0">Aucune notification ne correspond à vos filtres.</p>
+  </div>
+}

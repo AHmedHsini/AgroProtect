@@ -48,16 +48,7 @@ export class MatchListComponent implements OnInit {
   // Action handlers
  
 
-  // Helpers for template
-  getStatusClass(status: StatusMatch): string {
-    switch (status) {
-      case StatusMatch.EN_ATTENTE: return 'bg-warning text-dark';
-      case StatusMatch.ACCEPTE: return 'bg-success';
-      case StatusMatch.REFUSE: return 'bg-danger';
-      case StatusMatch.EXPIRE: return 'bg-secondary';
-      default: return 'bg-light text-dark';
-    }
-  }
+  
 
   // In match-list.component.ts
 formatDate(date: string | Date | undefined): string {
@@ -71,14 +62,24 @@ formatDate(date: string | Date | undefined): string {
       minute: '2-digit'
     });
   }
-
-  formatCurrency(amount: number | null | undefined): string {
-    if (amount == null) return '-';
-    return new Intl.NumberFormat('fr-TN', { 
-      style: 'currency', 
-      currency: 'TND' 
-    }).format(amount);
+  acceptMatch(m: Match): void {
+    if (!confirm(`Êtes-vous sûr de vouloir accepter le financement #${m.id} ?\nCela va déclencher les notifications de milestone.`)) {
+      return;
+    }
+  
+    this.matchService.acceptMatch(m.id!).subscribe({
+      next: () => {
+        // Reload the list to show the new status (ACCEPTE) and hide the accept button
+        this.loadMatches(); 
+      },
+      error: (err: any) => {
+        // Show backend error if status was already changed or annonce is closed
+        alert('Échec de l\'acceptation: ' + (err.error?.message || err.message));
+      }
+    });
   }
+
+  
 // Edit navigation
 edit(match: Match): void {
     this.router.navigate(['/backoffice/matches/edit', match.id]);
@@ -92,6 +93,30 @@ edit(match: Match): void {
       next: () => this.loadMatches(),
       error: (err: Error) => alert('Delete failed: ' + err.message)
     });
+}
+getStatusClass(status: StatusMatch): string {
+  const map: Record<string, string> = {
+    EN_ATTENTE: 'status-en-attente',
+    ACCEPTE: 'status-accepte',
+    REFUSE: 'status-refuse',
+    TERMINE: 'status-termine'
+  };
+  return map[status] || '';
+}
+
+formatStatus(status: StatusMatch): string {
+  const map: Record<string, string> = {
+    EN_ATTENTE: 'En attente',
+    ACCEPTE: 'Accepté',
+    REFUSE: 'Refusé',
+    TERMINE: 'Terminé'
+  };
+  return map[status] || status;
+}
+
+formatCurrency(amount: number | undefined): string {
+  if (!amount) return '— TND';
+  return amount.toLocaleString('fr-TN', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' TND';
 }
   
 }

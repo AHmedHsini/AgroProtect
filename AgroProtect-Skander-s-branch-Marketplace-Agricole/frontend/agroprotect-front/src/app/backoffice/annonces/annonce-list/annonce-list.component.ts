@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { AnnonceService } from '../../../core/service/annonce.service';
-import { Annonce } from '../../../core/models/annonce.model';
+import { Annonce, TypeAnnonce, StatusAnnonce } from '../../../core/models/annonce.model';
 
 @Component({
   selector: 'app-annonce-list',
@@ -73,5 +73,42 @@ export class AnnonceListComponent implements OnInit {
         alert('Delete failed: ' + err.message);
       }
     });
+  }
+  getTypeClass(type: TypeAnnonce): string {
+    const map: Record<string, string> = {
+      PROJET_AGRICOLE: 'type-projet',
+      EQUIPEMENT: 'type-equipement',
+      EMPLOI: 'type-emploi',
+      SERVICE: 'type-service'
+    };
+    return map[type] || '';
+  }
+  
+  formatType(type: TypeAnnonce): string {
+    const map: Record<string, string> = {
+      PROJET_AGRICOLE: 'Projet',
+      EQUIPEMENT: 'Equipement',
+      EMPLOI: 'Emploi',
+      SERVICE: 'Service'
+    };
+    return map[type] || type;
+  }
+  
+  getStatusClass(status: StatusAnnonce): string {
+    const map: Record<string, string> = {
+      DISPONIBLE: 'status-disponible',
+      NON_DISPONIBLE: 'status-non-disponible',
+      EN_ATTENTE: 'status-en-attente'
+    };
+    return map[status] || '';
+  }
+  
+  formatStatus(status: StatusAnnonce): string {
+    const map: Record<string, string> = {
+      DISPONIBLE: 'Disponible',
+      NON_DISPONIBLE: 'Fermé',
+      EN_ATTENTE: 'En attente'
+    };
+    return map[status] || status;
   }
 }

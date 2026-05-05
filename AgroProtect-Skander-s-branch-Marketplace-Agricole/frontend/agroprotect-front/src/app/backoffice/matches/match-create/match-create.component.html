@@ -1,60 +1,75 @@
-<div class="container mt-4">
-    <h2>Create New Match</h2>
-  
-    <!-- Error -->
-    <div *ngIf="error" class="alert alert-danger">
-      {{ error }}
+<div class="page-header">
+  <div class="page-header-info">
+    <h2>Nouveau Fund</h2>
+    <span class="page-subtitle">Enregistrer un investissement sur une annonce</span>
+  </div>
+</div>
+
+@if (error) {
+  <div class="alert alert-danger d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span>{{ error }}</span>
+  </div>
+}
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="content-card">
+    <div class="card-body-title">
+      <i class="bi bi-handshake"></i>
+      <span>Détails du fund</span>
     </div>
-  
-    <!-- Form -->
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="card p-4 mt-3">
-  
+
+    <div class="form-grid">
       <!-- Annonce ID -->
-      <div class="mb-3">
-        <label class="form-label">Annonce ID *</label>
-        <input type="number" class="form-control" formControlName="annonceId" placeholder="Enter annonce ID" min="1">
-        <div class="text-danger small" *ngIf="form.get('annonceId')?.invalid && form.get('annonceId')?.touched">
-          Annonce ID is required
+      <div class="form-group">
+        <label class="form-label">Annonce ID <span class="text-danger">*</span></label>
+        <div class="input-icon-wrapper">
+          <i class="bi bi-megaphone"></i>
+          <input type="number" class="form-control" formControlName="annonceId" placeholder="ID de l'annonce" min="1">
+        </div>
+        <div class="field-error" *ngIf="form.get('annonceId')?.invalid && form.get('annonceId')?.touched">
+          <i class="bi bi-info-circle"></i> L'ID de l'annonce est requis
         </div>
       </div>
-  
+
       <!-- Investisseur ID -->
-      <div class="mb-3">
-        <label class="form-label">Investisseur ID *</label>
-        <input type="number" class="form-control" formControlName="investisseurId" placeholder="Enter investor ID" min="1">
-        <div class="text-danger small" *ngIf="form.get('investisseurId')?.invalid && form.get('investisseurId')?.touched">
-          Investisseur ID is required
+      <div class="form-group">
+        <label class="form-label">Investisseur ID <span class="text-danger">*</span></label>
+        <div class="input-icon-wrapper">
+          <i class="bi bi-person"></i>
+          <input type="number" class="form-control" formControlName="investisseurId" placeholder="ID de l'investisseur" min="1">
+        </div>
+        <div class="field-error" *ngIf="form.get('investisseurId')?.invalid && form.get('investisseurId')?.touched">
+          <i class="bi bi-info-circle"></i> L'ID de l'investisseur est requis
         </div>
       </div>
-  
+
       <!-- Status -->
-      <div class="mb-3">
-        <label class="form-label">Status *</label>
+      <div class="form-group">
+        <label class="form-label">Statut <span class="text-danger">*</span></label>
         <select class="form-select" formControlName="status">
           <option [value]="statusMatch.EN_ATTENTE">En Attente</option>
           <option [value]="statusMatch.ACCEPTE">Accepté</option>
           <option [value]="statusMatch.REFUSE">Refusé</option>
-          <option [value]="statusMatch.EXPIRE">Expiré</option>
+          <option [value]="statusMatch.TERMINE">Terminé</option>
         </select>
       </div>
-  
-     
-  
-      <!-- Montant Proposé -->
-      <div class="mb-3">
-        <label class="form-label">Montant Proposé (TND)</label>
-        <input type="number" class="form-control" formControlName="montantPropose" placeholder="0.00" min="0" step="0.01">
+
+      <!-- Montant -->
+      <div class="form-group">
+        <label class="form-label">Montant proposé (TND)</label>
+        <div class="input-icon-wrapper input-icon-right">
+          <input type="number" class="form-control" formControlName="montantPropose" placeholder="0.000" min="0" step="0.01">
+          <span class="input-suffix">TND</span>
+        </div>
       </div>
-  
-      <!-- Buttons -->
-      <div class="d-flex gap-2 mt-4">
-        <button type="submit" class="btn btn-success" [disabled]="saving">
-          {{ saving ? 'Creating...' : 'Create Match' }}
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="cancel()">
-          Cancel
-        </button>
-      </div>
-  
-    </form>
+    </div>
   </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn-add" [disabled]="saving">
+      <i class="bi bi-check-lg"></i> {{ saving ? 'Création...' : 'Créer l\'annonce' }}
+    </button>
+    <button type="button" class="btn btn-cancel" (click)="cancel()">Annuler</button>
+  </div>
+</form>

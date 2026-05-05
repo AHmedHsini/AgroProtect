@@ -1,176 +1,202 @@
-<div class="container mt-4">
-  <h2>Update Annonce</h2>
-
-  <!-- Loading -->
-  <div *ngIf="loading" class="alert alert-info">
-    Loading...
+<div class="page-header">
+  <div class="page-header-info">
+    <h2>Modifier l'Annonce</h2>
+    <span class="page-subtitle">Mettez à jour les informations du projet</span>
   </div>
+</div>
 
-  <!-- Error -->
-  <div *ngIf="error" class="alert alert-danger">
-    {{ error }}
+@if (loading) {
+  <div class="content-card">
+    <div class="state-block">
+      <div class="spinner-border text-success" role="status"></div>
+      <span class="ms-2 text-muted">Chargement des données...</span>
+    </div>
   </div>
+}
 
-  <!-- Main Form -->
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="form && !loading" class="card p-4 mt-3">
-    
-    <!-- Type -->
-    <div class="mb-3">
-      <label class="form-label">Type *</label>
-      <select class="form-select" formControlName="typeAnnonce">
-        <option [value]="typeAnnonce.PROJET_AGRICOLE">Projet Agricole</option>
-        <option [value]="typeAnnonce.EQUIPEMENT">Equipement</option>
-        <option [value]="typeAnnonce.EMPLOI">Emploi</option>
-        <option [value]="typeAnnonce.SERVICE">Service</option>
-      </select>
-    </div>
-
-    <!-- titre -->
-    <div class="mb-3">
-      <label class="form-label">titre *</label>
-      <input type="text" class="form-control" formControlName="titre" placeholder="Enter titre">
-      <div class="text-danger small" *ngIf="form.get('titre')?.invalid && form.get('titre')?.touched">
-        titre is required (max 200 chars)
-      </div>
-    </div>
-
-    <!-- Description -->
-    <div class="mb-3">
-      <label class="form-label">Description</label>
-      <textarea class="form-control" formControlName="description" rows="4" placeholder="Enter description"></textarea>
-    </div>
-
-    <!-- Status -->
-    <div class="mb-3">
-      <label class="form-label">Status *</label>
-      <select class="form-select" formControlName="status">
-        <option [value]="statusAnnonce.EN_ATTENTE">En Attente</option>
-        <option [value]="statusAnnonce.DISPONIBLE">Disponible</option>
-        <option [value]="statusAnnonce.NON_DISPONIBLE">Non Disponible</option>
-      </select>
-    </div>
-
-    <!-- Target Amount -->
-    <div class="mb-3">
-      <label class="form-label">Target Amount (TND) *</label>
-      <input type="number" class="form-control" formControlName="targetAmount" min="0">
-    </div>
-
-    <!-- Location -->
-    <div class="mb-3">
-      <label class="form-label">Location</label>
-      <input type="text" class="form-control" formControlName="location" placeholder="City, Region">
-    </div>
-
-    <!-- Duration -->
-    <div class="mb-3">
-      <label class="form-label">Target Duration (Months)</label>
-      <input type="number" class="form-control" formControlName="targetDurationMonths" min="1">
-    </div>
-
-    <!-- Buttons -->
-    <div class="d-flex gap-2 mt-4">
-      <button type="submit" class="btn btn-success" [disabled]="saving">
-        {{ saving ? 'Creating...' : 'Update Annonce' }}
-      </button>
-      <button type="button" class="btn btn-secondary" (click)="cancel()">
-        Cancel
-      </button>
-    </div>
-
-  </form>
-
-  <!-- === ATTACHMENT UPLOAD SECTION (Always visible) === -->
-  <div class="card p-4 mt-4" *ngIf="form && !loading">
-    <h5 class="mb-3">📎 Attachments</h5>
-    
-    <!-- Info Banner (Shows until annonce is saved) -->
-    <div class="alert alert-info py-2 mb-3" *ngIf="!annonceId">
-      <i class="bi bi-info-circle"></i> 
-      <strong>Tip:</strong> update the annonce first to enable file uploads.
-    </div>
-
-    <!-- File Input -->
-    <div class="mb-3">
-      <label class="form-label">Choose File</label>
-      <input 
-        type="file" 
-        class="form-control" 
-        (change)="onFileSelected($event)"
-        [disabled]="uploading || !annonceId"
-        accept="image/*,.pdf,.doc,.docx,.xlsx,.zip">
-      <small class="text-muted">Max 10MB. Supported: Images, PDF, Word, Excel, ZIP</small>
-    </div>
-
-    <!-- Category Select -->
-    <div class="mb-3" *ngIf="selectedFile">
-      <label class="form-label">Category</label>
-      <select class="form-select" [(ngModel)]="uploadCategory" [disabled]="uploading || !annonceId">
-        <option value="DOCUMENT">Document</option>
-        <option value="IMAGE">Image</option>
-        <option value="CONTRACT">Contract</option>
-        <option value="OTHER">Other</option>
-      </select>
-    </div>
-
-    <!-- Upload Button -->
-    <button 
-      class="btn btn-sm btn-outline-primary mb-3" 
-      (click)="uploadAttachment()"
-      [disabled]="!selectedFile || uploading || !annonceId">
-      {{ uploading ? 'Uploading...' : '📤 Upload Attachment' }}
+@if (error) {
+  <div class="alert alert-danger d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span>{{ error }}</span>
+    <button class="btn btn-sm btn-outline-danger ms-auto" (click)="loadAnnonce(annonceId!)">
+      <i class="bi bi-arrow-clockwise me-1"></i> Réessayer
     </button>
+  </div>
+}
 
-    <!-- Progress Bar -->
-    <div class="progress mb-2" *ngIf="uploadProgress > 0">
-      <div class="progress-bar" 
-           [class.bg-success]="uploadProgress === 100"
-           [class.bg-danger]="uploadError"
-           role="progressbar" 
-           [style.width.%]="uploadProgress">
-        {{ uploadProgress }}%
+@if (!loading) {
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="content-card">
+      <div class="card-body-title">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>Informations générales</span>
+      </div>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Type <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="typeAnnonce">
+            <option [value]="typeAnnonce.PROJET_AGRICOLE">Projet Agricole</option>
+            <option [value]="typeAnnonce.EQUIPEMENT">Equipement</option>
+            <option [value]="typeAnnonce.EMPLOI">Emploi</option>
+            <option [value]="typeAnnonce.SERVICE">Service</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Statut <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="status">
+            <option [value]="statusAnnonce.EN_ATTENTE">En Attente</option>
+            <option [value]="statusAnnonce.DISPONIBLE">Disponible</option>
+            <option [value]="statusAnnonce.NON_DISPONIBLE">Non Disponible</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Titre <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="titre" placeholder="Entrez le titre">
+          <div class="field-error" *ngIf="form.get('titre')?.invalid && form.get('titre')?.touched">
+            <i class="bi bi-info-circle"></i> Le titre est requis (max 200 caractères)
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" formControlName="description" rows="4" placeholder="Décrivez le projet..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Montant cible (TND) <span class="text-danger">*</span></label>
+          <div class="input-icon-wrapper input-icon-right">
+            <input type="number" class="form-control" formControlName="targetAmount" min="0" placeholder="0.000">
+            <span class="input-suffix">TND</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Durée cible (Mois)</label>
+          <div class="input-icon-wrapper input-icon-right">
+            <input type="number" class="form-control" formControlName="targetDurationMonths" min="1" placeholder="0">
+            <span class="input-suffix">Mois</span>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Localisation</label>
+          <div class="input-icon-wrapper">
+            <i class="bi bi-geo-alt"></i>
+            <input type="text" class="form-control" formControlName="location" placeholder="Ville, Gouvernorat">
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Messages -->
-    <div class="text-success small mb-2" *ngIf="uploadMessage">{{ uploadMessage }}</div>
-    <div class="text-danger small mb-2" *ngIf="uploadError">{{ uploadError }}</div>
+    <!-- Attachments -->
+    <div class="content-card">
+      <div class="card-body-title">
+        <i class="bi bi-paperclip"></i>
+        <span>Pièces jointes</span>
+      </div>
 
-    <!-- Uploaded Files List -->
-    <div *ngIf="attachments.length > 0">
-      <h6 class="mb-2">Uploaded Files ({{ attachments.length }})</h6>
-      <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center py-2" 
-            *ngFor="let att of attachments">
-          <div>
-            <strong>{{ att.fileName }}</strong>
-            <div class="small text-muted">
-              {{ att.category }} • {{ formatSize(att.fileSize) }} • 
-              <span [class.text-warning]="att.status === 'PENDING'"
-                    [class.text-success]="att.status === 'APPROVED'"
-                    [class.text-danger]="att.status === 'REJECTED'">
-                {{ att.status }}
-              </span>
+      <div class="upload-zone" [class.disabled]="!annonceId || uploading">
+        <div class="upload-grid">
+          <div class="form-group">
+            <label class="form-label">Fichier</label>
+            <input 
+              type="file" 
+              class="form-control" 
+              (change)="onFileSelected($event)"
+              [disabled]="uploading || !annonceId"
+              accept="image/*,.pdf,.doc,.docx,.xlsx,.zip">
+            <small class="text-muted">Max 10MB. Images, PDF, Word, Excel, ZIP</small>
+          </div>
+
+          @if (selectedFile) {
+            <div class="form-group">
+              <label class="form-label">Catégorie</label>
+              <select class="form-select" [(ngModel)]="uploadCategory" [disabled]="uploading || !annonceId">
+                <option value="DOCUMENT">Document</option>
+                <option value="IMAGE">Image</option>
+                <option value="CONTRACT">Contrat</option>
+                <option value="OTHER">Autre</option>
+              </select>
+            </div>
+          }
+        </div>
+
+        @if (selectedFile) {
+          <button 
+            class="btn btn-outline-primary mt-2" 
+            (click)="uploadAttachment()"
+            [disabled]="!selectedFile || uploading || !annonceId">
+            <i class="bi bi-cloud-upload me-1"></i> 
+            {{ uploading ? 'Envoi en cours...' : 'Téléverser le fichier' }}
+          </button>
+        }
+
+        @if (uploadProgress > 0) {
+          <div class="progress mt-3">
+            <div class="progress-bar" 
+                 [class.bg-success]="uploadProgress === 100"
+                 [class.bg-danger]="uploadError"
+                 role="progressbar" 
+                 [style.width.%]="uploadProgress">
+              {{ uploadProgress }}%
             </div>
           </div>
-          <div class="btn-group btn-group-sm">
-            <button class="btn btn-outline-primary" 
-                    (click)="downloadAttachment(att.id, att.fileName)" 
-                    title="Download">📥</button>
-            <button class="btn btn-outline-danger" 
-                    (click)="deleteAttachment(att.id)" 
-                    title="Delete">🗑️</button>
-          </div>
-        </li>
-      </ul>
-    </div>
-    
-    <div class="text-muted small mt-2" *ngIf="attachments.length === 0 && annonceId">
-      No attachments yet. Upload files to add supporting documents.
-    </div>
-    <div class="text-muted small mt-2" *ngIf="attachments.length === 0 && !annonceId">
-      Attachments will appear here after you update the annonce.
-    </div>
-  </div>
+        }
 
-</div>
+        @if (uploadMessage) {
+          <div class="text-success small mt-2"><i class="bi bi-check-circle me-1"></i>{{ uploadMessage }}</div>
+        }
+        @if (uploadError) {
+          <div class="text-danger small mt-2"><i class="bi bi-x-circle me-1"></i>{{ uploadError }}</div>
+        }
+      </div>
+
+      @if (attachments.length > 0) {
+        <div class="file-list">
+          @for (att of attachments; track att.id) {
+            <div class="file-item">
+              <div class="file-info">
+                <i class="bi bi-file-earmark-fill file-icon"></i>
+                <div>
+                  <span class="file-name">{{ att.fileName }}</span>
+                  <span class="file-meta">
+                    {{ att.category }} &bull; {{ formatSize(att.fileSize) }} &bull;
+                    <span [class.text-warning]="att.status === 'PENDING'"
+                          [class.text-success]="att.status === 'APPROVED'"
+                          [class.text-danger]="att.status === 'REJECTED'">
+                      {{ att.status }}
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="btn btn-sm btn-outline-primary" (click)="downloadAttachment(att.id, att.fileName)" title="Télécharger">
+                  <i class="bi bi-download"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteAttachment(att.id)" title="Supprimer">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (attachments.length === 0) {
+        <div class="empty-files text-muted">
+          <i class="bi bi-folder2-open"></i> Aucun fichier attaché pour le moment.
+        </div>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-add" [disabled]="saving">
+        <i class="bi bi-check-lg"></i> {{ saving ? 'Mise à jour...' : 'Mettre à jour' }}
+      </button>
+      <button type="button" class="btn btn-cancel" (click)="cancel()">Annuler</button>
+    </div>
+  </form>
+}

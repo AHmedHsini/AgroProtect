@@ -1,0 +1,129 @@
+<div class="marketplace-container">
+  
+  <!-- HORIZONTAL FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+      
+      <div class="search-input-group">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" placeholder="Rechercher un projet...">
+      </div>
+
+      <div class="filter-selects">
+        <select class="form-select" [(ngModel)]="selectedType" (change)="applyFilters()">
+          <option value="">Tous les types</option>
+          <option value="PROJET_AGRICOLE">Projet Agricole</option>
+          <option value="EQUIPEMENT">Équipement</option>
+          <option value="EMPLOI">Emploi</option>
+          <option value="SERVICE">Service</option>
+        </select>
+
+        <select class="form-select" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <option value="">Tous les statuts</option>
+          <option value="DISPONIBLE">Disponible</option>
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="NON_DISPONIBLE">Fermé</option>
+        </select>
+      </div>
+
+      <button class="btn-filter" (click)="applyFilters()">
+        <i class="bi bi-funnel me-1"></i> Filtrer
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING & ERRORS -->
+  @if (loading) {
+    <div class="state-message">
+      <div class="spinner-border text-success" role="status"></div>
+      <span class="ms-2">Chargement des projets...</span>
+    </div>
+  }
+
+  @if (error) {
+    <div class="alert alert-danger d-flex align-items-center">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  <!-- PROJECT CARDS GRID (3 per row) -->
+  @if (!loading && annonces.length > 0) {
+    <div class="row g-4">
+      @for (item of annonces; track item.id) {
+        <div class="col-md-4">
+          <div class="project-card">
+            
+            <!-- IMAGE SECTION -->
+            <div class="card-image-container">
+              @if (imageUrls[item.id]) {
+                <img [src]="imageUrls[item.id]" alt="{{ item.titre }}" class="card-image">
+              } @else{
+                <div class="card-image-placeholder">
+                  <i class="bi bi-image"></i>
+                </div>
+              }
+            </div>
+
+            <div class="card-header-custom">
+              <span class="type-badge" [ngClass]="getTypeClass(item.typeAnnonce)">{{ formatType(item.typeAnnonce) }}</span>
+              <span class="status-badge" [ngClass]="getStatusClass(item.status)">{{ formatStatus(item.status) }}</span>
+            </div>
+
+            <div class="card-body-custom">
+              <h5 class="project-title">{{ item.titre }}</h5>
+              
+              @if (item.location) {
+                <p class="project-location"><i class="bi bi-geo-alt-fill"></i> {{ item.location }}</p>
+              }
+
+              <p class="project-desc">{{ truncateText(item.description) }}</p>
+
+              <!-- Funding Progress -->
+              <div class="funding-section">
+                <div class="funding-stats">
+                  <span class="funded-amount">{{ formatCurrency(item.fundedAmount || 0) }}</span>
+                  <span class="target-amount">/ {{ formatCurrency(item.targetAmount) }}</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar-track">
+                    <div class="progress-bar-fill" [style.width.%]="item.progressPercentage || 0"></div>
+                  </div>
+                  <span class="progress-percentage">{{ roundPercentage(item.progressPercentage || 0) }}%</span>
+                </div>
+                <div class="investor-count">
+                  <i class="bi bi-people-fill"></i> {{ item.totalInvestors || 0 }} Investisseur(s)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- EMPTY STATE -->
+  @if (!loading && annonces.length === 0 && !error) {
+    <div class="state-message">
+      <i class="bi bi-search" style="font-size: 3rem; color: #ccc;"></i>
+      <h5>Aucun projet trouvé</h5>
+      <p class="text-muted">Essayez de modifier vos filtres.</p>
+    </div>
+  }
+
+  <!-- PAGINATION -->
+  @if (!loading && pagination && pagination.totalPages > 1) {
+    <div class="pagination-controls">
+      <button class="page-btn" [disabled]="currentPage === 0" (click)="goToPage(currentPage - 1)">
+        <i class="bi bi-chevron-left"></i> Précédent
+      </button>
+      
+      <span class="page-info">Page {{ currentPage + 1 }} sur {{ pagination.totalPages }}</span>
+      
+      <button class="page-btn" [disabled]="pagination.last" (click)="goToPage(currentPage + 1)">
+        Suivant <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  }
+
+</div>

@@ -2,7 +2,7 @@ export enum StatusMatch {
     EN_ATTENTE = 'EN_ATTENTE',
     ACCEPTE = 'ACCEPTE',
     REFUSE = 'REFUSE',
-    EXPIRE = 'EXPIRE'
+    TERMINE = 'TERMINE'
   }
   
   export interface Match {

@@ -108,15 +108,7 @@ export class NotificationListComponent implements OnInit {
     alert(`Subject: ${notification.subject}\n\n${notification.content}`);
   }
 
-  getStatusClass(status: StatusNotification): string {
-    switch (status) {
-      case StatusNotification.ENVOYE: return 'bg-primary';
-      case StatusNotification.LU: return 'bg-success';
-      case StatusNotification.NON_LU: return 'bg-warning text-dark';
-      case StatusNotification.ERREUR: return 'bg-danger';
-      default: return 'bg-secondary';
-    }
-  }
+  
 
   formatDate(date: string | undefined): string {
     if (!date) return '-';
@@ -136,5 +128,24 @@ export class NotificationListComponent implements OnInit {
     this.searchQuery = '';
     this.recipientFilter = null;
     this.applyFilters();
+  }
+  formatStatus(status: string): string {
+    const map: Record<string, string> = {
+      ENVOYE: 'Envoyé',
+      LU: 'Lu',
+      NON_LU: 'Non lu',
+      ERREUR: 'Erreur'
+    };
+    return map[status] || status;
+  }
+  
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      ENVOYE: 'status-envoye',
+      LU: 'status-lu',
+      NON_LU: 'status-non-lu',
+      ERREUR: 'status-erreur'
+    };
+    return map[status] || '';
   }
 }

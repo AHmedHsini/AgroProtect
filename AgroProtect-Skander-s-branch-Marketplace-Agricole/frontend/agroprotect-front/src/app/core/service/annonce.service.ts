@@ -4,6 +4,8 @@ import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Annonce } from '../models/annonce.model';
+import { SearchAnnonceRequest } from '../models/search-annonce-request.model';
+import { AnnonceSearchResponse } from '../models/annonce-search-response.model';
 
 export interface Attachment {
   id: number;
@@ -42,6 +44,9 @@ export class AnnonceService {
   }
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/deleteAnnonce/${id}`);
+  }
+  searchAnnonces(request: SearchAnnonceRequest): Observable<AnnonceSearchResponse> {
+    return this.http.post<AnnonceSearchResponse>(`${this.baseUrl}/search`, request);
   }
 
   // === NEW: Attachment Methods ===

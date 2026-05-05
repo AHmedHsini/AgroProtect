@@ -1,0 +1,30 @@
+<header class="navbar">
+    <div class="navbar-container">
+      <a routerLink="/frontoffice" class="navbar-brand">
+        <i class="bi bi-tree-fill"></i>
+        <span>AgroProtect</span>
+      </a>
+  
+      <nav class="navbar-links">
+        <a routerLink="/frontoffice" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Marketplace</a>
+        <a routerLink="/frontoffice/my-projects" routerLinkActive="active">Mes Projets</a>
+        <a routerLink="/frontoffice/my-investments" routerLinkActive="active">Mes Investissements</a>
+      </nav>
+  
+      <div class="navbar-actions">
+        <button class="btn-login">
+          <i class="bi bi-person-circle me-1"></i> Connexion
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+  
+  <footer class="footer">
+    <div class="footer-container">
+      <p>&copy; 2026 AgroProtect. Tous droits réservés.</p>
+    </div>
+  </footer>

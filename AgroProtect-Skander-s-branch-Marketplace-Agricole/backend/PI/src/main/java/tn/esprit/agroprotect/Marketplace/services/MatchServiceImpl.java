@@ -48,14 +48,20 @@ public class MatchServiceImpl implements MatchService {
         Annonce annonce = annonceRepository.findById(request.getAnnonceId())
                 .orElseThrow(() -> new RuntimeException("Annonce not found: " + request.getAnnonceId()));
         Match match = new Match();
-        match.setAnnonce(annonce);  // ← Set the full entity here
+        match.setAnnonce(annonce);
         match.setInvestisseurId(request.getInvestisseurId());
         match.setMessage(request.getMessage());
         match.setMontantPropose(request.getMontantPropose());
         match.setStatus(request.getStatus() != null
                 ? request.getStatus()
                 : StatusMatch.EN_ATTENTE);
-        return matchRepository.save(match);
+
+        Match savedMatch = matchRepository.save(match);
+
+        // ✅ ADD THIS LINE RIGHT HERE:
+        this.sendMatchCreatedNotifications(savedMatch);
+
+        return savedMatch;
     }
 
     public void sendMatchCreatedNotifications(Match match) {
@@ -89,7 +95,7 @@ public class MatchServiceImpl implements MatchService {
             }
         }
 
-        if (creatorId != null && !creatorId.equals(investorId)) {
+        if (creatorId != null ) {
             Optional<NotificationTemplate> creatorTemplateOpt = notificationTemplateRepository.findByCode("2");
             if (creatorTemplateOpt.isPresent()) {
                 NotificationTemplate creatorTemplate = creatorTemplateOpt.get();

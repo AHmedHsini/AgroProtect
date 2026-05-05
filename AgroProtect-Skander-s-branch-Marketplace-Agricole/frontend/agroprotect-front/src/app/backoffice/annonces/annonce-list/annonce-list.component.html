@@ -1,74 +1,103 @@
-<div class="container mt-4">
+<div class="page-header">
+  <div class="page-header-info">
     <h2>Annonces</h2>
-    <div class="mb-3">
-      <button class="btn btn-success" routerLink="/backoffice/annonces/new">
-        <i class="bi bi-plus-lg"></i> New Annonce
-      </button>
-    </div>
-  
-    <!-- Loading -->
-    <div *ngIf="loading" class="alert alert-info">
-      Loading annonces...
-    </div>
-  
-    <!-- Error -->
-    <div *ngIf="error" class="alert alert-danger">
-      {{ error }}
-    </div>
-  
-    <!-- Table -->
-    <table class="table table-striped" *ngIf="!loading && annonces.length > 0">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Type</th>
-          <th>Titre</th>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Budget</th>
-          <th>Location</th>
-          <th style="width: 180px;">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let a of annonces">
-          <td>{{ a.id }}</td>
-          <td>{{ a.typeAnnonce }}</td>
-          <td>{{ a.titre }}</td>
-          <!-- Date -->
-          <td>{{ formatDate(a.datePublication) }}</td>
-          <td>
-            <span class="badge" [ngClass]="{
-              'bg-warning': a.status === 'EN_ATTENTE',
-              'bg-success': a.status === 'DISPONIBLE',
-              'bg-danger': a.status === 'NON_DISPONIBLE'
-            }">
-              {{ a.status }}
-            </span>
-          </td>
-          <td>{{ a.targetAmount | currency:'TND' }}</td>
-          <td>{{ a.location || '-' }}</td>
-          <td>
-            <div class="d-flex gap-2">
-              <button 
-                class="btn btn-sm btn-primary" 
-                (click)="edit(a); $event.stopPropagation()">
-                <i class="bi bi-pencil-square"></i> Update
-              </button>
-              
-              <button 
-                class="btn btn-sm btn-danger" 
-                (click)="delete(a); $event.stopPropagation()">
-                <i class="bi bi-trash"></i> Delete
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <!-- Empty -->
-    <div *ngIf="!loading && annonces.length === 0 && !error" class="alert alert-secondary">
-      No annonces found.
+    <span class="page-subtitle">{{ annonces.length }} annonce(s) au total</span>
+  </div>
+  <button class="btn-add" routerLink="/backoffice/annonces/new">
+    <i class="bi bi-plus-circle-fill"></i>
+    <span>Nouvelle Annonce</span>
+  </button>
+</div>
+
+@if (loading) {
+  <div class="content-card">
+    <div class="state-block">
+      <div class="spinner-border text-success" role="status"></div>
+      <span class="ms-2 text-muted">Loading annonces...</span>
     </div>
   </div>
+}
+
+@if (error) {
+  <div class="alert alert-danger d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span>{{ error }}</span>
+    <button class="btn btn-sm btn-outline-danger ms-auto" (click)="loadAnnonces()">
+      <i class="bi bi-arrow-clockwise me-1"></i> Retry
+    </button>
+  </div>
+}
+
+@if (!loading && annonces.length > 0) {
+  <div class="content-card">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Titre</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Budget</th>
+            <th>Location</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of annonces; track a.id) {
+            <tr>
+              <td class="text-muted fw-medium">#{{ a.id }}</td>
+              <td>
+                <span class="type-badge" [ngClass]="getTypeClass(a.typeAnnonce)">
+                  {{ formatType(a.typeAnnonce) }}
+                </span>
+              </td>
+              <td><strong>{{ a.titre }}</strong></td>
+              <td class="text-muted">{{ formatDate(a.datePublication) }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(a.status)">
+                  {{ formatStatus(a.status) }}
+                </span>
+              </td>
+              <td class="fw-medium">{{ a.targetAmount | currency:'TND ':'symbol':'1.0-0' }}</td>
+              <td>
+                @if (a.location) {
+                  <span class="location-cell">
+                    <i class="bi bi-geo-alt"></i> {{ a.location }}
+                  </span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td>
+                
+                <div class="action-group">
+                  <button class="action-btn action-btn-edit" routerLink="/backoffice/annonces/edit/{{ a.id }}">
+                    <i class="bi bi-pencil-square me-1"></i> Modifier
+                  </button>
+                  <button class="action-btn action-btn-delete" (click)="delete(a)">
+                    <i class="bi bi-trash3 me-1"></i> Supprimer
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
+
+@if (!loading && annonces.length === 0 && !error) {
+  <div class="empty-state">
+    <div class="empty-icon">
+      <i class="bi bi-megaphone"></i>
+    </div>
+    <h5>No annonces found</h5>
+    <p class="text-muted mb-3">Start by creating your first annonce.</p>
+    <button class="btn btn-success" routerLink="/backoffice/annonces/new">
+      <i class="bi bi-plus-lg me-1"></i> New Annonce
+    </button>
+  </div>
+}

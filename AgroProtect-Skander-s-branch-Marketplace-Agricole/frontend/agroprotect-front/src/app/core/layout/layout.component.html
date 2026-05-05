@@ -1,0 +1,65 @@
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <i class="bi bi-tree-fill brand-icon"></i>
+        <span class="brand-text">AgroProtect</span>
+      </div>
+  
+      <nav class="sidebar-nav">
+        <ul>
+          @for (item of menuItems; track item.path) {
+            <li>
+              <a
+                [routerLink]="item.path"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: false }"
+                class="nav-link"
+              >
+                <i class="bi {{ item.icon }}"></i>
+                <span>{{ item.label }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </nav>
+  
+      <div class="sidebar-footer">
+        <div class="admin-info">
+          <div class="admin-avatar">A</div>
+          <div class="admin-details">
+            <span class="admin-name">Admin</span>
+            <span class="admin-role">Administrateur</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  
+    <!-- MAIN AREA -->
+    <div class="main-wrapper">
+  
+      <!-- TOP HEADER -->
+      <header class="top-header">
+        <div class="header-left">
+          <h5 class="page-title">Panel d'administration</h5>
+        </div>
+        <div class="header-right">
+          <div class="header-action">
+            <i class="bi bi-bell"></i>
+            <span class="action-badge">3</span>
+          </div>
+          <div class="header-divider"></div>
+          <div class="header-user">
+            <span>Admin</span>
+          </div>
+        </div>
+      </header>
+  
+      <!-- PAGE CONTENT -->
+      <main class="page-content">
+        <router-outlet></router-outlet>
+      </main>
+  
+    </div>
+  </div>
