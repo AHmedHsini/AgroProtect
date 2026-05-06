@@ -1,0 +1,67 @@
+# Root .gitignore for pi_rami project (Angular + Spring Boot)
+
+# --- General / OS ---
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.swp
+desktop.ini
+
+# --- IDEs / Editors ---
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.factorypath
+.springBeans
+.sts4-cache
+.apt_generated
+.history/
+*.sublime-project
+*.sublime-workspace
+
+# --- Angular (agro-ui) ---
+agro-ui/node_modules/
+agro-ui/.angular/
+agro-ui/dist/
+agro-ui/tmp/
+agro-ui/out-tsc/
+agro-ui/bazel-out/
+agro-ui/npm-debug.log
+agro-ui/yarn-error.log
+agro-ui/coverage/
+agro-ui/.sass-cache/
+
+# --- Java / Maven (Scoring_Aide) ---
+Scoring_Aide/target/
+Scoring_Aide/.mvn/wrapper/maven-wrapper.jar
+Scoring_Aide/bin/
+Scoring_Aide/build/
+Scoring_Aide/out/
+
+# --- Sensitive Files (Secrets/Environment) ---
+**/.env
+**/.env.local
+**/.env.*.local
+**/environment.local.ts
+**/application-local.properties
+**/secrets.yml
+**/credentials.json
+
+# --- Python / ML (if any, like ml_model) ---
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
+**/.venv/
+**/venv/
+**/env/
+Scoring_Aide/ml_model/venv/
+Scoring_Aide/ml_model/.ipynb_checkpoints/

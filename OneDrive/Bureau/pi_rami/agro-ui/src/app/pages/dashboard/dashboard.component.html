@@ -1,0 +1,422 @@
+<div class="dashboard-container relative">
+
+  <!-- ── LOADING OVERLAY ── -->
+  @if (isLoading()) {
+    <div class="absolute inset-0 bg-bg-base/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+      <lucide-icon name="sprout" class="w-16 h-16 text-primary animate-bounce"></lucide-icon>
+      <p class="mt-4 font-bold text-muted-foreground">Chargement des données du backend...</p>
+    </div>
+  }
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" [class.collapsed]="!sidebarOpen()">
+    <div class="p-6 flex items-center gap-4">
+      <div class="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center border border-primary/30">
+        <lucide-icon name="sprout" class="w-6 h-6 text-primary"></lucide-icon>
+      </div>
+      <div class="logo-text">
+        <h1 class="text-xl font-bold tracking-tight">AgroProtect</h1>
+        <p class="text-[10px] text-muted-foreground uppercase tracking-widest">SaaS Decision AI</p>
+      </div>
+    </div>
+
+    <nav class="flex-1 px-4 py-4 space-y-1">
+      @for (item of navItems(); track trackByFn($index, item)) {
+        <a [routerLink]="item.link"
+           routerLinkActive="bg-primary/10 text-primary"
+           [routerLinkActiveOptions]="{exact: item.id === 'dashboard'}"
+           class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all cursor-pointer group text-muted-foreground hover:bg-white/5">
+          <lucide-icon [name]="item.icon" class="w-5 h-5 group-hover:scale-110 transition-transform"></lucide-icon>
+          <span class="nav-label font-medium text-sm">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="nav-badge ml-auto px-2 py-0.5 bg-primary/20 text-[10px] font-bold text-primary rounded-full">
+              {{ item.badge }}
+            </span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="p-4 mt-auto border-t border-border/50">
+      <div class="glass-card !p-4 mb-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-black font-bold text-xs">
+          {{ userInitials() }}
+        </div>
+        <div class="user-info min-w-0">
+          <p class="text-xs font-bold truncate">{{ userName() }}</p>
+          <p class="text-[10px] text-muted-foreground">{{ userRole() }}</p>
+        </div>
+      </div>
+      <button (click)="logout()" class="w-full flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-500/10 rounded-xl transition-all text-sm font-medium">
+        <lucide-icon name="log-out" class="w-4 h-4"></lucide-icon>
+        <span class="nav-label">Déconnexion</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main-content relative h-screen overflow-y-auto">
+    
+    <!-- ── TOPBAR ── -->
+    <header class="h-16 px-8 flex items-center justify-between border-b border-border/30 backdrop-blur-md sticky top-0 z-40">
+      <div class="flex items-center gap-6">
+        <button (click)="toggleSidebar()" class="p-2 hover:bg-white/5 rounded-lg transition-colors">
+          <lucide-icon name="menu" class="w-5 h-5"></lucide-icon>
+        </button>
+        <div class="flex items-center text-sm text-muted-foreground">
+          <span>AgroProtect</span>
+          <lucide-icon name="chevron-right" class="w-4 h-4 mx-2"></lucide-icon>
+          <span class="text-foreground font-semibold">Tableau de Bord</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="relative hidden lg:block">
+          <lucide-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"></lucide-icon>
+          <input type="text" placeholder="Rechercher une parcelle..." 
+                 class="bg-white/5 border border-border/50 rounded-full pl-10 pr-4 py-2 text-xs focus:ring-1 focus:ring-primary outline-none w-64 transition-all">
+        </div>
+        <button (click)="toggleNotif()" class="relative p-2 hover:bg-white/5 rounded-lg transition-colors">
+          <lucide-icon name="bell" class="w-5 h-5 text-muted-foreground"></lucide-icon>
+          <span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full ring-4 ring-bg-base"></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="p-8 space-y-8 animate-in">
+      
+      <!-- ── ERROR BANNER ── -->
+      @if (errorMessage()) {
+        <div class="bg-red-500/10 border border-red-500/30 text-red-500 px-6 py-4 rounded-xl flex items-center gap-4">
+          <lucide-icon name="bell" class="w-6 h-6"></lucide-icon>
+          <div>
+            <h4 class="font-bold">Erreur de connexion</h4>
+            <p class="text-sm">{{ errorMessage() }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- ── KPI GRID ── -->
+      <div class="kpi-grid">
+        @for (kpi of kpis(); track trackByFn($index, kpi)) {
+          <div class="glass-card kpi-card">
+            <div class="kpi-icon" [style.background]="kpi.color + '20'" [style.color]="kpi.color">{{ kpi.icon }}</div>
+            <div class="kpi-info">
+              <p class="kpi-label">{{ kpi.label }}</p>
+              <div class="flex items-baseline gap-2">
+                <p class="kpi-value">{{ kpi.value }}</p>
+                @if (kpi.trend) {
+                  <span class="text-[10px] font-bold" [style.color]="kpi.trendUp ? '#00ff88' : '#ff4d4d'">
+                    {{ kpi.trendUp ? '↑' : '↓' }} {{ kpi.trend }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- ── CHARTS SECTION ── -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="glass-card lg:col-span-2 min-h-[400px] !p-0 overflow-hidden relative">
+          <div class="absolute top-4 left-4 z-10 bg-bg-base/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+            <lucide-icon name="map" class="w-3.5 h-3.5 text-primary"></lucide-icon>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-foreground">Surveillance Satellite & NDVI</span>
+          </div>
+          <app-agro-map 
+            [terrains]="terrains()" 
+            [activeTerrainId]="activeTerrain()?.id">
+          </app-agro-map>
+        </div>
+        <div class="glass-card min-h-[300px]">
+          <h3 class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-6">Distribution des Risques</h3>
+          <div class="h-[250px]">
+            <canvas baseChart
+              [data]="distributionData()"
+              [options]="pieChartOptions"
+              [type]="'pie'">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      @if (activeTerrain()) {
+        <!-- ── HERO SECTION ── -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 relative">
+          
+          @if (isTerrainLoading()) {
+            <div class="absolute inset-0 bg-bg-base/50 backdrop-blur-sm z-30 flex items-center justify-center rounded-2xl">
+              <lucide-icon name="sprout" class="w-10 h-10 text-primary animate-spin"></lucide-icon>
+            </div>
+          }
+
+          <!-- Score Hero -->
+          <div class="xl:col-span-2 glass-card flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
+            <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full"></div>
+            
+            <div class="score-ring-container">
+              <svg viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="80" fill="none" stroke-width="16" class="score-bg"></circle>
+                <circle cx="100" cy="100" r="80" fill="none" stroke-width="16" 
+                        stroke-dasharray="502.65" [style.stroke-dashoffset]="502.65 * (1 - scoreAnimated() / 100)"
+                        [style.color]="scoreColor()"
+                        class="score-fill" stroke-linecap="round" stroke="currentColor"></circle>
+              </svg>
+              <div class="score-content">
+                <div class="score-value">{{ scoreAnimated().toFixed(1) }}</div>
+                <div class="score-label">{{ scoreLabel() }}</div>
+              </div>
+            </div>
+
+            <div class="flex-1 space-y-6 text-center md:text-left">
+              <div>
+                <h2 class="text-3xl font-black tracking-tight">{{ activeTerrain()?.name }}</h2>
+                <p class="text-muted-foreground flex items-center justify-center md:justify-start gap-2 mt-1">
+                  <lucide-icon name="map-pin" class="w-4 h-4"></lucide-icon>
+                  {{ activeTerrain()?.location }} — {{ activeTerrain()?.surface }} hectares
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+                <span class="px-3 py-1 bg-white/5 border border-border rounded-lg text-xs font-medium">Satellites: Sentinel-2</span>
+                <span class="px-3 py-1 bg-white/5 border border-border rounded-lg text-xs font-medium">Actualisé: {{ activeTerrain()?.date }}</span>
+              </div>
+              <button (click)="calculerScore()" 
+                      [disabled]="isTerrainLoading()"
+                      class="px-6 py-3 bg-primary text-black font-bold rounded-xl hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed">
+                Relancer l'Analyse
+              </button>
+            </div>
+          </div>
+
+          <!-- Terrain Selector -->
+          <div class="glass-card flex flex-col">
+            <h3 class="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Mes Terrains</h3>
+            <div class="space-y-2 flex-1 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+              @for (t of terrains(); track t.id) {
+                <div (click)="selectTerrain(t)"
+                     class="p-4 rounded-xl border border-transparent hover:border-border transition-all cursor-pointer flex items-center justify-between"
+                     [class.bg-white/5]="activeTerrain()?.id === t.id"
+                     [class.border-primary/30]="activeTerrain()?.id === t.id">
+                  <div>
+                    <p class="font-bold text-sm">{{ t.name }}</p>
+                    <p class="text-[10px] text-muted-foreground">{{ t.location }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-black" [style.color]="getScoreColor(t.score)">{{ t.score.toFixed(1) }}</p>
+                    <p class="text-[10px] uppercase tracking-tighter" [style.color]="getScoreColor(t.score)">{{ t.decision }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TOP 5 TERRAINS ── -->
+        <div class="glass-card overflow-hidden">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold">⭐ Top 5 Parcelles (Haut Rendement)</h3>
+            <button class="text-primary text-xs font-bold hover:underline">Voir tout</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="text-[10px] uppercase tracking-widest text-muted-foreground border-b border-border/30">
+                  <th class="pb-3 px-4">Terrain</th>
+                  <th class="pb-3">Région</th>
+                  <th class="pb-3">Surface</th>
+                  <th class="pb-3 text-right pr-4">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (t of topTerrains(); track t.id) {
+                  <tr class="group hover:bg-white/5 transition-colors border-b border-border/10 last:border-0">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                          {{ $index + 1 }}
+                        </div>
+                        <span class="font-bold text-sm">{{ t.name }}</span>
+                      </div>
+                    </td>
+                    <td class="py-3 text-sm text-muted-foreground">{{ t.location }}</td>
+                    <td class="py-3 text-sm text-muted-foreground">{{ t.surface }} ha</td>
+                    <td class="py-3 text-right pr-4">
+                      <span class="px-3 py-1 rounded-lg bg-primary/20 text-primary font-black text-xs">{{ t.score.toFixed(1) }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── STATS & DECISION ── -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
+          
+          @if (isTerrainLoading()) {
+            <div class="absolute inset-0 bg-bg-base/50 backdrop-blur-sm z-30 rounded-2xl"></div>
+          }
+
+          <!-- Breakdown -->
+          <div class="glass-card">
+            <div class="flex items-center justify-between mb-8">
+              <h3 class="text-xl font-bold">Décomposition du Score</h3>
+              <div class="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-bold text-primary">MULTI-FACTEURS</div>
+            </div>
+            
+            @if (breakdown().length === 0) {
+              <div class="text-center py-8 text-muted-foreground text-sm">
+                Aucune analyse détaillée disponible.
+              </div>
+            } @else {
+              <div class="space-y-6">
+                @for (item of breakdown(); track item.key) {
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-lg">{{ item.icon }}</span>
+                        <span class="font-semibold">{{ item.label }}</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class="text-muted-foreground text-[10px] uppercase tracking-widest">{{ item.detail }}</span>
+                        <span class="font-black">{{ item.score }}%</span>
+                      </div>
+                    </div>
+                    <div class="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-1000"
+                           [style.width]="item.score + '%'"
+                           [style.background]="getBarColor(item.score)"></div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Decision Card -->
+          @if (decision()) {
+            <div class="glass-card decision-card flex flex-col items-center justify-center text-center p-12"
+                 [ngClass]="decisionClass()">
+              <div class="text-6xl mb-6 drop-shadow-lg">{{ decision()!.emoji }}</div>
+              <h3 class="text-4xl font-black mb-4 tracking-tighter" 
+                  [style.color]="getDecisionConfig(decision()!.type).color">
+                {{ decision()!.type }}
+              </h3>
+              <p class="text-muted-foreground text-sm leading-relaxed mb-8 max-w-md">
+                {{ decision()!.summary }}
+              </p>
+              
+              <div class="w-full max-w-sm space-y-4 mb-8">
+                <div class="flex items-center justify-between text-xs font-bold mb-1">
+                  <span class="uppercase tracking-widest text-muted-foreground">Confiance IA</span>
+                  <span [style.color]="getDecisionConfig(decision()!.type).color">{{ decision()!.confidence }}%</span>
+                </div>
+                <div class="h-1.5 bg-black/20 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-transparent to-current transition-all duration-1000"
+                       [style.width]="decision()!.confidence + '%'"
+                       [style.color]="getDecisionConfig(decision()!.type).color"></div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full text-left">
+                @for (f of decision()!.factors; track f.label) {
+                  <div class="flex items-start gap-2 text-[11px]">
+                    <span class="mt-0.5" [class.text-primary]="f.positive" [class.text-red-500]="!f.positive">
+                      {{ f.positive ? '✓' : '✗' }}
+                    </span>
+                    <span class="text-muted-foreground">{{ f.label }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- ── RECOMMENDATIONS & ACTIVITY ── -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 relative">
+          
+          @if (isTerrainLoading()) {
+            <div class="absolute inset-0 bg-bg-base/50 backdrop-blur-sm z-30 rounded-2xl"></div>
+          }
+
+          <!-- Recommendations -->
+          <div class="glass-card">
+            <h3 class="text-xl font-bold mb-6">Recommandations & Actions</h3>
+            @if (recommendations().length === 0) {
+              <div class="text-center py-8 text-muted-foreground text-sm">
+                Aucune recommandation générée pour le moment.
+              </div>
+            } @else {
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="text-[10px] uppercase tracking-widest text-muted-foreground border-b border-border/50">
+                      <th class="pb-4 font-bold"># Rank</th>
+                      <th class="pb-4 font-bold">Action</th>
+                      <th class="pb-4 font-bold">Score</th>
+                      <th class="pb-4 font-bold">Priorité</th>
+                      <th class="pb-4 font-bold">Raison</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-sm">
+                    @for (rec of recommendations(); track rec.rank) {
+                      <tr class="group hover:bg-white/5 transition-colors">
+                        <td class="py-4 font-mono text-muted-foreground">#{{ rec.rank }}</td>
+                        <td class="py-4">
+                          <div class="flex items-center gap-3">
+                            <span class="text-xl">{{ rec.icon }}</span>
+                            <span class="font-bold">{{ rec.name }}</span>
+                          </div>
+                        </td>
+                        <td class="py-4">
+                          <div class="flex items-center gap-2">
+                            <span class="font-black">{{ rec.matchScore }}%</span>
+                            <div class="w-12 h-1 bg-white/10 rounded-full overflow-hidden hidden md:block">
+                              <div class="h-full bg-primary" [style.width]="rec.matchScore + '%'"></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="py-4 text-xs text-muted-foreground">{{ rec.season }}</td>
+                        <td class="py-4 text-xs text-muted-foreground max-w-[200px] truncate">{{ rec.reason }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+
+          <!-- Market Insights -->
+          <div class="glass-card">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold">Insights du Marché</h3>
+              <lucide-icon name="trending-up" class="w-4 h-4 text-primary"></lucide-icon>
+            </div>
+            
+            <div class="space-y-4">
+              @for (m of marketInsights(); track m.cropName) {
+                <div class="p-4 rounded-2xl bg-white/5 border border-border/30 flex items-center justify-between hover:border-primary/50 transition-all">
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-xl">🌱</div>
+                    <div>
+                      <p class="font-bold text-sm">{{ m.cropName }}</p>
+                      <p class="text-[10px] text-muted-foreground uppercase tracking-widest">Score Opportunité: {{ m.finalOpportunityScore }}%</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs font-bold text-primary">Tendance</p>
+                    <p class="text-[10px] text-muted-foreground">Hausse prévue</p>
+                  </div>
+                </div>
+              }
+              @if (marketInsights().length === 0) {
+                <div class="text-center py-8 text-muted-foreground text-sm">Chargement des tendances...</div>
+              }
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  </main>
+</div>

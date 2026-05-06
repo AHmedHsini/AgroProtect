@@ -1,0 +1,84 @@
+<div class="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+  <!-- Decorative Blobs -->
+  <div class="absolute top-[-10%] left-[-5%] w-96 h-96 bg-primary/10 rounded-full blur-[100px] blob-2"></div>
+  <div class="absolute bottom-[-10%] right-[-5%] w-96 h-96 bg-secondary/10 rounded-full blur-[100px] blob-1"></div>
+
+  <div class="w-full max-w-md space-y-8 relative z-10">
+    <div class="text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-6 border border-primary/20">
+        <lucide-angular [img]="Leaf" class="w-8 h-8 text-primary"></lucide-angular>
+      </div>
+      <h1 class="text-4xl font-bold tracking-tight text-foreground mb-2">Rejoindre AgroProtect</h1>
+      <p class="text-muted-foreground">La révolution agricole commence ici</p>
+    </div>
+
+    <div class="bg-card border border-border p-8 rounded-3xl shadow-2xl backdrop-blur-sm">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-2">Nom complet</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <lucide-angular [img]="User" class="h-5 w-5 text-muted-foreground"></lucide-angular>
+            </div>
+            <input
+              type="text"
+              formControlName="name"
+              class="block w-full pl-10 pr-3 py-3 bg-muted border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+              placeholder="Jean Dupont"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-2">Email Professionnel</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <lucide-angular [img]="Mail" class="h-5 w-5 text-muted-foreground"></lucide-angular>
+            </div>
+            <input
+              type="email"
+              formControlName="email"
+              class="block w-full pl-10 pr-3 py-3 bg-muted border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+              placeholder="agriculteur@domaine.fr"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-foreground mb-2">Mot de passe</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <lucide-angular [img]="Lock" class="h-5 w-5 text-muted-foreground"></lucide-angular>
+            </div>
+            <input
+              type="password"
+              formControlName="password"
+              class="block w-full pl-10 pr-3 py-3 bg-muted border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="registerForm.invalid || isLoading()"
+          class="w-full py-4 px-6 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center space-x-2 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
+        >
+          @if (isLoading()) {
+            <div class="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
+          } @else {
+            <span>Créer mon compte</span>
+            <lucide-angular [img]="ArrowRight" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-angular>
+          }
+        </button>
+      </form>
+
+      <div class="mt-8 text-center text-sm">
+        <p class="text-muted-foreground">
+          Déjà inscrit ?
+          <a routerLink="/login" class="text-primary font-semibold hover:underline">Se connecter</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-[#0b1a13] to-transparent border-b border-white/5 backdrop-blur-sm">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+
+    <!-- LOGO -->
+    <div class="flex items-center gap-2 hover:scale-105 transition cursor-pointer"
+         (click)="scrollToTop()">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+        <lucide-icon name="leaf" class="w-6 h-6 text-white"></lucide-icon>
+      </div>
+      <span class="text-xl font-bold bg-gradient-to-r from-green-300 to-emerald-400 bg-clip-text text-transparent">
+        AgroProtect
+      </span>
+    </div>
+
+    <!-- MENU DESKTOP -->
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+
+      <button (click)="scrollToSection('features')"
+        class="text-gray-300 hover:text-green-300 transition">
+        Fonctionnalités
+      </button>
+
+      <button (click)="scrollToSection('benefits')"
+        class="text-gray-300 hover:text-green-300 transition">
+        Avantages
+      </button>
+
+      <button (click)="scrollToSection('cta')"
+        class="text-gray-300 hover:text-green-300 transition">
+        Commencer
+      </button>
+
+      <!-- BOUTON LOGIN -->
+      <button (click)="goToLogin()"
+        class="px-6 py-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 
+               hover:from-green-500 hover:to-emerald-600 
+               text-black font-semibold transition-all duration-300 
+               hover:shadow-lg hover:shadow-green-500/40">
+        Se connecter
+      </button>
+
+    </div>
+
+    <!-- MENU MOBILE -->
+    <button (click)="toggleMobileMenu()" class="md:hidden">
+      @if (!mobileMenuOpen()) {
+        <lucide-icon name="menu"></lucide-icon>
+      } @else {
+        <lucide-icon name="x"></lucide-icon>
+      }
+    </button>
+
+  </div>
+</nav>

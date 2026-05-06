@@ -1,0 +1,179 @@
+/** @import must precede all other statements */
+@import "leaflet/dist/leaflet.css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme - Nature Inspired AgroProtect
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    /* AgroProtect Premium Dark Theme */
+    --background: 0 0% 5%; /* #0d0d0d */
+    --foreground: 0 0% 95%;
+    
+    --card: 0 0% 8%; /* #141414 */
+    --card-foreground: 0 0% 95%;
+    
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    
+    --primary: 152 100% 50%; /* #00ff88 */
+    --primary-foreground: 0 0% 5%;
+    
+    --secondary: 192 100% 50%; /* #00ccff */
+    --secondary-foreground: 0 0% 5%;
+    
+    --muted: 0 0% 12%; /* #1f1f1f */
+    --muted-foreground: 0 0% 65%;
+    
+    --accent: 152 100% 50%;
+    --accent-foreground: 0 0% 5%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 95%;
+    
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 152 100% 50%;
+    
+    --radius: 1rem;
+  }
+
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --muted: 0 0% 12%;
+  }
+}
+
+@layer base {
+  :root {
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  code, pre {
+    font-family: var(--font-mono);
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+}
+
+/* Premium Nature-Inspired Animations */
+@keyframes organic-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(2deg);
+  }
+}
+
+@keyframes gentle-sway {
+  0%, 100% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+@keyframes glow-nature {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.1), inset 0 0 20px rgba(46, 204, 113, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(46, 204, 113, 0.2), inset 0 0 30px rgba(46, 204, 113, 0.1);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Organic blob animations */
+@keyframes blob-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+@keyframes blob-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-30px, 50px) scale(0.9); }
+  66% { transform: translate(20px, -20px) scale(1.1); }
+}
+
+.organic-float {
+  animation: organic-float 4s ease-in-out infinite;
+}
+
+.gentle-sway {
+  animation: gentle-sway 3s ease-in-out infinite;
+}
+
+.glow-nature {
+  animation: glow-nature 3s ease-in-out infinite;
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slide-in-right 0.8s ease-out forwards;
+}
+
+.blob-1 {
+  animation: blob-1 7s infinite;
+}
+
+.blob-2 {
+  animation: blob-2 7s infinite;
+}

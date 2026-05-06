@@ -1,0 +1,47 @@
+# Angular .gitignore
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+*.launch
+*.sublime-workspace
+
+# Visual Studio Code
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# Environment / Secrets
+.env
+.env.*
+environment.local.ts
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini

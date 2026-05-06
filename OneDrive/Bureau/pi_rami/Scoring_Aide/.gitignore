@@ -1,0 +1,48 @@
+# Spring Boot / Maven .gitignore
+
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDEs
+.idea
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+.springBeans
+.sts4-cache
+.apt_generated
+
+# Build
+build/
+bin/
+out/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Secrets
+application-local.properties
+.env
+secrets.yml
+
+# ML Model (Python)
+ml_model/venv/
+ml_model/__pycache__/
+ml_model/*.pyc
+ml_model/.ipynb_checkpoints/
+
+# System
+.DS_Store
+Thumbs.db

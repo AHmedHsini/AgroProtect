@@ -1,0 +1,208 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #080808;
+  color: #f0f0f0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+// ─── VARIABLES ───────────────────────────────────────────────────────────────
+
+$bg-base: #080808;
+$bg-surface: #111111;
+$bg-card: rgba(255, 255, 255, 0.03);
+$border: rgba(255, 255, 255, 0.06);
+$primary: #00ff88;
+$secondary: #00ccff;
+$accent: #a78bfa;
+$text-muted: #888;
+
+// ─── LAYOUT ──────────────────────────────────────────────────────────────────
+
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 280px;
+  background: $bg-surface;
+  border-right: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+
+  &.collapsed {
+    width: 80px;
+    .nav-label, .logo-text, .nav-badge, .user-info { display: none; }
+  }
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.05), transparent 70%);
+}
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+
+.glass-card {
+  background: $bg-card;
+  backdrop-filter: blur(12px);
+  border: 1px solid $border;
+  border-radius: 24px;
+  padding: 24px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+// ─── SCORE RING ──────────────────────────────────────────────────────────────
+
+.score-ring-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+
+  .score-bg {
+    stroke: rgba(255, 255, 255, 0.05);
+  }
+
+  .score-fill {
+    transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  .score-content {
+    position: absolute;
+    text-align: center;
+    line-height: 1;
+
+    .score-value {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: -2px;
+    }
+    .score-label {
+      font-size: 12px;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+  }
+}
+
+// ─── KPI CARDS ───────────────────────────────────────────────────────────────
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .kpi-info {
+    flex: 1;
+    .kpi-label { font-size: 13px; color: $text-muted; }
+    .kpi-value { font-size: 24px; font-weight: 700; margin: 2px 0; }
+    .kpi-trend { 
+      font-size: 11px; 
+      display: flex; 
+      align-items: center; 
+      gap: 4px;
+      &.up { color: $primary; }
+      &.down { color: #ff4d4d; }
+    }
+  }
+}
+
+// ─── DECISION ────────────────────────────────────────────────────────────────
+
+.decision-card {
+  &.decision-green { border-color: rgba(0, 255, 136, 0.3); background: linear-gradient(135deg, rgba(0, 255, 136, 0.08), transparent); }
+  &.decision-orange { border-color: rgba(255, 204, 0, 0.3); background: linear-gradient(135deg, rgba(255, 204, 0, 0.08), transparent); }
+  &.decision-red { border-color: rgba(255, 77, 77, 0.3); background: linear-gradient(135deg, rgba(255, 77, 77, 0.08), transparent); }
+}
+
+// ─── ANIMATIONS ──────────────────────────────────────────────────────────────
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: slideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+// ─── RESPONSIVE ──────────────────────────────────────────────────────────────
+
+// ─── CHARTS & TABLES ─────────────────────────────────────────────────────────
+
+canvas {
+  filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.1));
+}
+
+.custom-scrollbar {
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+}
+
+table {
+  border-spacing: 0;
+  width: 100%;
+  
+  th { text-align: left; }
+  
+  tr {
+    transition: all 0.2s ease;
+    &:hover { background: rgba(255, 255, 255, 0.02); }
+  }
+}
+
+.kpi-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  &:hover { transform: scale(1.1) rotate(5deg); }
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    position: absolute;
+    left: -280px;
+    height: 100%;
+    &.open { left: 0; }
+  }
+}
